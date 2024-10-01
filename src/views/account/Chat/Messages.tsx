@@ -43,43 +43,50 @@ const Messages: Screen<"Messages"> = ({
   const account = useCurrentAccount(state => state.account!);
   const [chats, setChats] = useState<Chat[] | null>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [showNewMessage, setShowNewMessage] = useState(false);
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      ...TabAnimatedTitle({ theme, route, navigation }),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ChatCreate")}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-            marginRight: 16,
-          }}
-        >
-          <NativeText
-            variant={"overtitle"}
-            style={{color: colors.primary}}
+    if (showNewMessage) {
+      navigation.setOptions({
+        ...TabAnimatedTitle({ theme, route, navigation }),
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChatCreate")}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              marginRight: 16,
+            }}
           >
-            Nouvelle discussion
-          </NativeText>
-          <SquarePen color={colors.primary} size={22} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, route.params, theme.colors.text]);
+            <NativeText
+              variant={"overtitle"}
+              style={{color: colors.primary}}
+            >
+              Nouvelle discussion
+            </NativeText>
+            <SquarePen color={colors.primary} size={22} />
+          </TouchableOpacity>
+        ),
+      });
+    } else {
+      navigation.setOptions({
+        ...TabAnimatedTitle({ theme, route, navigation }),});
+    }
+
+  }, [navigation, route.params, theme.colors.text, showNewMessage]);
 
   async function refreshChats () {
     const chats = await getChats(account);
     setChats(chats);
+    if (account.service === AccountService.EcoleDirecte) {
+      setShowNewMessage(account.abilities.canReplyChats);
+    }
   }
 
   useEffect(() => {
     refreshChats();
     navigation.addListener("focus", refreshChats);
-    if (account.service === AccountService.EcoleDirecte) {
-      account.instance;
-    }
   }, [account?.instance]);
 
   // useEffect(() => {

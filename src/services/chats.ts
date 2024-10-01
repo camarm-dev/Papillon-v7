@@ -10,7 +10,9 @@ export const getChats = async <T extends Account> (account: T): Promise<Array<Ch
     }
     case AccountService.EcoleDirecte: {
       const {getChats} = await import("./ecoledirecte/chats");
-      return await getChats(account);
+      const chats = await getChats(account);
+      account.abilities.canReplyChats = chats.canReply;
+      return (chats).chats;
     }
     default:
       console.info(`[getChats]: returning empty since ${account.service} not implemented.`);

@@ -3,18 +3,21 @@ import type { EcoleDirecteAccount } from "@/stores/account/types";
 import { ErrorServiceUnauthenticated } from "../shared/errors";
 import type { Chat, ChatMessage } from "../shared/Chat";
 
-export const getChats = async (account: EcoleDirecteAccount): Promise<Chat[]> => {
+export const getChats = async (account: EcoleDirecteAccount): Promise<{chats: Chat[], canReply: boolean}> => {
   if (!account.authentication.session)
     throw new ErrorServiceUnauthenticated("ecoledirecte");
-
   const chats = await ecoledirecte.studentReceivedMessages(account.authentication.session, account.authentication.account);
 
-  return chats.map((chat) => ({
-    id: chat.id.toString(),
-    subject: chat.subject,
-    recipient: chat.sender,
-    creator: chat.sender,
-  }));
+  return {
+    canReply: chats.canReply,
+    chats: chats.chats.map((chat) => ({
+      id: chat.id.toString(),
+      subject: chat.subject,
+      recipient: chat.sender,
+      creator: chat.sender,
+      unreadMessages: chat.read,
+      isGroup: false // not in ed
+    }))};
 };
 
 export const getChatMessages = async (account: EcoleDirecteAccount, chat: Chat): Promise<ChatMessage> => {

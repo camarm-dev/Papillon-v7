@@ -5,7 +5,7 @@ export interface Chat {
   subject: string
   recipient: string
   creator: string
-  unreadMessages: number
+  unreadMessages: number | boolean
   isGroup: boolean
 
   /**

@@ -115,6 +115,9 @@ export interface EcoleDirecteAccount extends BaseAccount {
   authentication: {
     session: PawdirecteSession
     account: PawdirecteAccount
+  },
+  abilities: {
+    canReplyChats: boolean
   }
 }
 

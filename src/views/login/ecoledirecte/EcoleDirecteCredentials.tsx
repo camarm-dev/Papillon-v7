@@ -82,6 +82,9 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
           session: currentSession,
           account
         },
+        abilities: {
+          canReplyChats: false,
+        },
         personalization: await defaultPersonalization(account)
       };
 
