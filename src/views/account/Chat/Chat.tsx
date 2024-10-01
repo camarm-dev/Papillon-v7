@@ -1,12 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
 import {
   FlatList, Image, KeyboardAvoidingView,
+  ScrollView,
   TextInput, TouchableOpacity, View,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import type { Screen } from "@/router/helpers/types";
 import {
+  NativeItem,
+  NativeList,
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
@@ -26,6 +29,7 @@ import {animPapillon} from "@/utils/ui/animations";
 import MissingItem from "@/components/Global/MissingItem";
 import {DefaultTheme} from "@/consts/DefaultTheme";
 import GetThemeForChatId from "@/utils/chat/themes/GetThemeForChatId";
+import { AccountService } from "@/stores/account/types";
 
 const Chat: Screen<"Chat"> = ({
   navigation,
@@ -45,20 +49,26 @@ const Chat: Screen<"Chat"> = ({
 
   async function refreshMessages (handlerRefresh = false) {
     if (route.params.handle.id === "new") return;
-
-    console.log(route.params.handle.id);
-    if (handlerRefresh) {
-      let chats = await getChats(account);
-      let chat = chats.find(chat => chat.id === route.params.handle.id);
-      if (chat) {
-        let messages = await getChatMessages(account, chat);
-        setMessages(messages.reverse());
-        return;
+    if (account.service === AccountService.Pronote) {
+      console.log(route.params.handle.id);
+      if (handlerRefresh) {
+        let chats = await getChats(account);
+        let chat = chats.find(chat => chat.id === route.params.handle.id);
+        if (chat) {
+          let messages = await getChatMessages(account, chat);
+          setMessages(messages.reverse());
+          return;
+        }
       }
+      const messages = await getChatMessages(account, route.params.handle);
+      setMessages(messages.reverse());
+      setLoading(false);
+    } else if (account.service === AccountService.EcoleDirecte) {
+      const messages = await getChatMessages(account, route.params.handle);
+      setMessages([messages]);
+      setLoading(false);
     }
-    const messages = await getChatMessages(account, route.params.handle);
-    setMessages(messages.reverse());
-    setLoading(false);
+
   }
 
   useEffect(() => {
@@ -88,10 +98,78 @@ const Chat: Screen<"Chat"> = ({
     return () => clearTimeout(timeout);
   }, [route.params.handle]);
 
+  if (account.service === AccountService.EcoleDirecte) {
+    return (<View style={{flex: 1}}>
+      {messages[0] && <>
+        <PapillonModernHeader outsideNav={true}>
+          <View style={{flexDirection: "row", alignItems: "center", gap: 10}}>
+            <View style={{backgroundColor: theme.colors.background, borderRadius: 100}}>
+              <View
+                style={{
+                  borderRadius: 100,
+                  width: 42,
+                  height: 42,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <InitialIndicator
+                  initial={parse_initials(messages[0]?.author)}
+                  color={route.params.color.bright}
+                  textColor={route.params.color.dark}
+                />
+              </View>
+            </View>
+            <View style={{flex: 1}}>
+              <NativeText variant="title" numberOfLines={1}>
+                {messages[0]?.subject}
+              </NativeText>
+              <NativeText variant="subtitle" numberOfLines={1}>
+                {messages[0].author}
+              </NativeText>
+            </View>
+            <View>
+
+            </View>
+          </View>
+        </PapillonModernHeader>
+
+        <ScrollView
+          contentContainerStyle={{
+            padding: 16,
+            paddingTop: 70 + 16,
+            paddingBottom: useSafeAreaInsets().bottom + 16,
+          }}
+          style={{flex: 1}}
+        >
+          <NativeList>
+            <NativeItem>
+              <RenderHTML
+                source={{ html: messages[0].content.replaceAll(/<\/?font[^>]*>/g, "") }}
+                defaultTextProps={{
+                  style: {
+                    color: theme.colors.text,
+                    fontFamily: "medium",
+                    fontSize: 16,
+                    lineHeight: 22,
+                  },
+                }}
+                contentWidth={300}
+              />
+            </NativeItem>
+
+          </NativeList>
+
+        </ScrollView></>}
+
+    </View>);
+
+
+  }
   return (
     <View style={{
       flex: 1,
-      paddingBottom: insets.bottom,
+      paddingBottom: route.params.canReply ? insets.bottom : 0,
       backgroundColor: theme.dark ? chatTheme.darkModifier.inputBarBackgroundColor : chatTheme.lightModifier.inputBarBackgroundColor,
     }}>
       <KeyboardAvoidingView
@@ -108,8 +186,8 @@ const Chat: Screen<"Chat"> = ({
             <TouchableOpacity onPress={() => navigation.navigate("ChatModal", {handle: route.params.handle, theme: chatTheme})} style={{flexDirection: "row", gap: 10, alignItems: "center"}}>
               <InitialIndicator
                 initial={route.params.handle.isGroup ? "group":parse_initials(route.params.handle.recipient)}
-                color={getProfileColorByName(route.params.handle.recipient).bright}
-                textColor={getProfileColorByName(route.params.handle.recipient).dark}
+                color={route.params.color.bright}
+                textColor={route.params.color.dark}
                 size={38}
               />
               <View style={{flex: 1}}>
@@ -315,7 +393,7 @@ const Chat: Screen<"Chat"> = ({
                     }}
                   >
                     <RenderHTML
-                      source={{html: item.item.content ?? "<div></div>"}}
+                      source={{html: item.item.content.replaceAll(/<\/?font[^>]*>/g, "") ?? "<div></div>"}}
                       contentWidth={300}
                       defaultTextProps={{
                         style: {
@@ -357,7 +435,7 @@ const Chat: Screen<"Chat"> = ({
             />
           </View>
         ): <View style={{flex: 1}}/>}
-        <View style={{
+        {route.params.canReply && <View style={{
           minHeight: 66,
           maxHeight: 120,
           paddingVertical: 10,
@@ -444,7 +522,8 @@ const Chat: Screen<"Chat"> = ({
           >
             <Send color={"#FFF"} size={24} style={{marginTop: 1, marginLeft: -3}}/>
           </TouchableOpacity>
-        </View>
+        </View>}
+
       </KeyboardAvoidingView>
     </View>
   );

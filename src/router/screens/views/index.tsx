@@ -103,4 +103,8 @@ export default [
     presentation: "modal",
     headerShown: false
   }),
+  createScreen("EDChat", Chat, {
+    headerShown: false,
+    presentation: "modal"
+  })
 ] as const;

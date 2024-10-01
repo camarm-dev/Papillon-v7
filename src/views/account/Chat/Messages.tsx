@@ -154,38 +154,48 @@ const Messages: Screen<"Messages"> = ({
         />
       ) : (
         <NativeList style={{marginBottom: 20}}>
-          {chats.map((chat) => (
-            <NativeItem
-              key={chat.id}
-              onPress={() => navigation.navigate("Chat", { handle: chat })}
-              leading={
-                <InitialIndicator
-                  initial={chat.isGroup ? "group":parse_initials(chat.recipient)}
-                  color={getProfileColorByName(chat.recipient).bright}
-                  textColor={getProfileColorByName(chat.recipient).dark}
-                />
-              }
-            >
-              <NativeText variant={"subtitle"}>
-                {chat.recipient}
-              </NativeText>
-              <View style={{flexDirection: "row", alignItems: "center", gap: 5}}>
-                {chat.unreadMessages > 0 && (
-                  <View
-                    style={{
-                      backgroundColor: getProfileColorByName(chat.recipient).dark,
-                      borderRadius: 5,
-                      height: 10,
-                      width: 10,
-                    }}
+          {chats.map((chat) => {
+            const colors = getProfileColorByName(chat.recipient.startsWith("M.") || chat.recipient.startsWith("MMe.") ? chat.recipient.split(" ").slice(1).join(" ") : chat.recipient);
+            return (
+              <NativeItem
+                key={chat.id}
+                onPress={() => navigation.navigate(account.service !== AccountService.EcoleDirecte ? "Chat": "EDChat", { handle: chat, canReply: showNewMessage, color: colors })}
+                leading={
+                  <InitialIndicator
+                    initial={chat.isGroup ? "group" : parse_initials(chat.recipient.startsWith("M.") || chat.recipient.startsWith("MMe.") ? chat.recipient.split(" ").slice(1).join(" ") : chat.recipient)}
+                    color={colors.bright}
+                    textColor={colors.dark}
                   />
-                )}
-                <NativeText>
-                  {chat.subject || "Aucun sujet"}
-                </NativeText>
-              </View>
-            </NativeItem>
-          ))}
+                }
+              >
+                <View style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}><NativeText
+                    numberOfLines={1}
+                    variant="subtitle"
+                  >
+                    {chat.recipient}
+                  </NativeText>
+
+                  {chat.unreadMessages == 0 && (
+                    <View style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 5,
+                      backgroundColor: colors.dark,
+                    }} />
+                  )}</View>
+
+                <View style={{flexDirection: "row", alignItems: "center", gap: 5}}>
+
+                  <NativeText>
+                    {chat.subject || "Aucun sujet"}
+                  </NativeText>
+                </View>
+              </NativeItem>
+            );})}
         </NativeList>
       )}
     </ScrollView>

@@ -117,8 +117,8 @@ export type RouteParameters = {
 
   Messages: undefined;
   ChatCreate: undefined;
-  Chat: { handle: Chat };
-
+  Chat: { handle: Chat, canReply: boolean, color: {bright: string, dark: string} };
+  EDChat: { handle: Chat, canReply: boolean, color: {bright: string, dark: string} };
   AccountStack: { onboard: boolean };
   ExternalAccountSelectMethod: { service: AccountService | "Other" }
   ExternalAccountSelector: undefined;
