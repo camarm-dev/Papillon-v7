@@ -51,7 +51,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({
   }
 
   useEffect(() => {
-    void async function () {
+    async () => {
       const recipients = await createDiscussionRecipients(account);
       let categories = [];
       recipients.forEach((recipient) => {
@@ -67,7 +67,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({
       });
       setRecipients(filteredRecipients);
       setSelectedRecipients([]);
-    }();
+    };
   }, [account?.instance]);
 
   return (

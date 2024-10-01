@@ -3,12 +3,14 @@ import WidgetHeader from "@/components/Home/WidgetHeader";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { getSubjectData } from "@/services/shared/Subject";
 import { type TimetableClass, TimetableClassStatus } from "@/services/shared/Timetable";
+import { updateTimetableForWeekInCache } from "@/services/timetable";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
+import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { useTheme } from "@react-navigation/native";
 import { Calendar, Clock } from "lucide-react-native";
 import type React from "react";
-import { forwardRef, useEffect, useImperativeHandle, useState, useCallback } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState, useCallback, useMemo } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 const lz = (num: number) => (num < 10 ? `0${num}` : num);
@@ -49,7 +51,7 @@ const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }:
 
     const weekCourses = timetables[currentWeekNumber];
 
-    const updatedNextCourse = allCourses
+    const updatedNextCourse = weekCourses
       .filter(c => c.endTimestamp > today && c.status !== TimetableClassStatus.CANCELED)
       .sort((a, b) => a.startTimestamp - b.startTimestamp)[0];
 

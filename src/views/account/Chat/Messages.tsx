@@ -22,6 +22,7 @@ import {getProfileColorByName} from "@/services/local/default-personalization";
 import {animPapillon} from "@/utils/ui/animations";
 import Reanimated, {FadeIn, FadeInDown, FadeOut} from "react-native-reanimated";
 import MissingItem from "@/components/Global/MissingItem";
+import { AccountService } from "@/stores/account/types";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -76,11 +77,14 @@ const Messages: Screen<"Messages"> = ({
   useEffect(() => {
     refreshChats();
     navigation.addListener("focus", refreshChats);
+    if (account.service === AccountService.EcoleDirecte) {
+      account.instance;
+    }
   }, [account?.instance]);
 
-  useEffect(() => {
-    if (account.service  === AccountService.EcoleDirecte) setShowNewMessage(false);
-  }, [account.service]);
+  // useEffect(() => {
+  //   if (account.service  === AccountService.EcoleDirecte) setShowNewMessage(false);
+  // }, [account.service]);
 
   return (
     <ScrollView

@@ -30,7 +30,7 @@ export const PapillonModernHeader: React.FC<{
           top: 0,
           left: 0,
           right: 0,
-          height: outsideNav ? height : insets.top + height,
+          height: outsideNav ? 70 : insets.top + 70,
           zIndex: 90,
         }}
       />
