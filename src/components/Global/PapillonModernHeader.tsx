@@ -1,45 +1,30 @@
-import React, { Children, useEffect, useRef, useState } from "react";
-import { Button, StyleSheet, View } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
-import { Screen } from "@/router/helpers/types";
-import { NativeText } from "@/components/Global/NativeComponents";
-import InfiniteDatePager from "@/components/Global/InfiniteDatePager";
-import HorizontalDatePicker from "./Atoms/LessonsDatePicker";
-import { useCurrentAccount } from "@/stores/account";
-import { useTimetableStore } from "@/stores/timetable";
-import { AccountService } from "@/stores/account/types";
-import { updateTimetableForWeekInCache } from "@/services/timetable";
-import { Page } from "./Atoms/Page";
-import { LessonsDateModal } from "./LessonsHeader";
-import { set } from "lodash";
-import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
-
-import Reanimated, { FadeIn, FadeInDown, FadeInLeft, FadeOut, FadeOutLeft, FadeOutRight, FadeOutUp, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { PressableScale } from "react-native-pressable-scale";
 import { useTheme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
-import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { LinearGradient } from "expo-linear-gradient";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { ArrowLeftToLine, ArrowUp, CalendarCheck, CalendarClock, CalendarPlus, CalendarSearch, History, ListRestart, Loader, Plus, Rewind } from "lucide-react-native";
 
 export const PapillonModernHeader: React.FC<{
   children: React.ReactNode,
   outsideNav?: boolean,
-  height?: number,
-  startLocation?: number,
-}> = ({ children, outsideNav = false, height = 70, startLocation = 0.5 }) => {
+  color?: string,
+}> = ({ children, outsideNav, color }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  const gradientColor = color ? color : theme.colors.background;
 
   return (
     <>
       <LinearGradient
-        colors={[theme.colors.background + "EE", theme.colors.background + "00"]}
-        locations={[startLocation, 1]}
+        colors={[gradientColor + "EE", gradientColor + "00"]}
+        locations={[0.5, 1]}
         style={{
           position: "absolute",
           top: 0,

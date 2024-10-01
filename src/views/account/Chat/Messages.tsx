@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   TouchableOpacity,
   ScrollView,
-  LogBox
+  LogBox, RefreshControl, Platform, ActivityIndicator, Text, View
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import type { Screen } from "@/router/helpers/types";
@@ -17,7 +17,11 @@ import { Chat } from "@/services/shared/Chat";
 import { getChats } from "@/services/chats";
 import InitialIndicator from "@/components/News/InitialIndicator";
 import parse_initials from "@/utils/format/format_pronote_initials";
-import { AccountService } from "@/stores/account/types";
+import {SquarePen} from "lucide-react-native";
+import {getProfileColorByName} from "@/services/local/default-personalization";
+import {animPapillon} from "@/utils/ui/animations";
+import Reanimated, {FadeIn, FadeInDown, FadeOut} from "react-native-reanimated";
+import MissingItem from "@/components/Global/MissingItem";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -36,19 +40,42 @@ const Messages: Screen<"Messages"> = ({
   const { colors } = theme;
 
   const account = useCurrentAccount(state => state.account!);
-  const [chats, setChats] = useState<Chat[] | null>(null);
-  const [showNewMessage, setShowNewMessage] = useState(true);
+  const [chats, setChats] = useState<Chat[] | null>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       ...TabAnimatedTitle({ theme, route, navigation }),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ChatCreate")}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            marginRight: 16,
+          }}
+        >
+          <NativeText
+            variant={"overtitle"}
+            style={{color: colors.primary}}
+          >
+            Nouvelle discussion
+          </NativeText>
+          <SquarePen color={colors.primary} size={22} />
+        </TouchableOpacity>
+      ),
     });
   }, [navigation, route.params, theme.colors.text]);
 
+  async function refreshChats () {
+    const chats = await getChats(account);
+    setChats(chats);
+  }
+
   useEffect(() => {
-    void async function () {
-      const chats = await getChats(account);
-      setChats(chats);
-    }();
+    refreshChats();
+    navigation.addListener("focus", refreshChats);
   }, [account?.instance]);
 
   useEffect(() => {
@@ -58,51 +85,98 @@ const Messages: Screen<"Messages"> = ({
   return (
     <ScrollView
       contentContainerStyle={{
-        padding: 20,
-        paddingTop: 0
+        paddingHorizontal: 20,
       }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={() => {
+          setRefreshing(true);
+          refreshChats()
+            .then(() => setRefreshing(false));
+        }}/>
+      }
     >
-      {showNewMessage && <TouchableOpacity
-        onPress={() => navigation.navigate("ChatCreate")}
-      >
-        <NativeText>
-          Nouvelle discussion
-        </NativeText>
-      </TouchableOpacity>}
+      {!chats ? (
+        <Reanimated.View
+          entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
+          exiting={Platform.OS === "ios" ? FadeOut.springify().mass(1).damping(20).stiffness(300) : undefined}
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 26
+          }}
+        >
+          <ActivityIndicator size={"large"} />
 
-      <NativeList>
-        {!chats ? (
-          <NativeItem>
-            <NativeText>
-              En cours de chargement
-            </NativeText>
-          </NativeItem>
-        ) : chats.length === 0 ? (
-          <NativeItem>
-            <NativeText>
-              Aucune discussion !
-            </NativeText>
-          </NativeItem>
-        ) : chats.map((chat) => (
-          <NativeItem
-            key={chat.id}
-            onPress={() => navigation.navigate("Chat", { handle: chat })}
-            leading={<InitialIndicator
-              initial={parse_initials(chat.recipient)}
-              color={theme.colors.primary}
-            />}
-
-
+          <Text
+            style={{
+              color: colors.text,
+              fontSize: 18,
+              textAlign: "center",
+              fontFamily: "semibold",
+              marginTop: 10,
+            }}
           >
-            <NativeText>
-              {chat.creator}
-            </NativeText>
-            <NativeText>
-              {chat.subject}
-            </NativeText>
-          </NativeItem>
-        ))}
-      </NativeList>
+            Chargement des discussions...
+          </Text>
+
+          <Text
+            style={{
+              color: colors.text,
+              fontSize: 16,
+              textAlign: "center",
+              fontFamily: "medium",
+              marginTop: 4,
+              opacity: 0.5,
+            }}
+          >
+            Vos conversations arrivent...
+          </Text>
+        </Reanimated.View>
+      ) : chats.length === 0 ? (
+        <MissingItem
+          emoji="💬"
+          title="Aucune discussion"
+          description="Commencez une nouvelle discussion pour les afficher ici."
+          entering={animPapillon(FadeInDown)}
+          exiting={animPapillon(FadeOut)}
+          style={{paddingVertical: 26}}
+        />
+      ) : (
+        <NativeList style={{marginBottom: 20}}>
+          {chats.map((chat) => (
+            <NativeItem
+              key={chat.id}
+              onPress={() => navigation.navigate("Chat", { handle: chat })}
+              leading={
+                <InitialIndicator
+                  initial={chat.isGroup ? "group":parse_initials(chat.recipient)}
+                  color={getProfileColorByName(chat.recipient).bright}
+                  textColor={getProfileColorByName(chat.recipient).dark}
+                />
+              }
+            >
+              <NativeText variant={"subtitle"}>
+                {chat.recipient}
+              </NativeText>
+              <View style={{flexDirection: "row", alignItems: "center", gap: 5}}>
+                {chat.unreadMessages > 0 && (
+                  <View
+                    style={{
+                      backgroundColor: getProfileColorByName(chat.recipient).dark,
+                      borderRadius: 5,
+                      height: 10,
+                      width: 10,
+                    }}
+                  />
+                )}
+                <NativeText>
+                  {chat.subject || "Aucun sujet"}
+                </NativeText>
+              </View>
+            </NativeItem>
+          ))}
+        </NativeList>
+      )}
     </ScrollView>
   );
 };

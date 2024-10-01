@@ -5,6 +5,9 @@ export interface Chat {
   subject: string
   recipient: string
   creator: string
+  unreadMessages: number
+  isGroup: boolean
+
   /**
    * Link to the original instance.
    * You can also not use it, it all depends on the service
@@ -22,4 +25,5 @@ export interface ChatMessage {
   subject: string
   date: Date
   attachments: Attachment[]
+  isAuthor: boolean
 }

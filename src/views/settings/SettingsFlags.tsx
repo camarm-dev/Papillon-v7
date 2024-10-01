@@ -1,12 +1,12 @@
-import React, { useRef } from "react";
-import { ScrollView, TextInput, Alert, KeyboardAvoidingView, StyleSheet } from "react-native";
+import React from "react";
+import { ScrollView, View, TextInput, Alert, KeyboardAvoidingView } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
 import { Code } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useFlagsStore } from "@/stores/flags";
-import { useCurrentAccount } from "@/stores/account";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
   const { flags, remove, set } = useFlagsStore();
@@ -78,7 +78,20 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
               placeholder="Nouveau flag"
               placeholderTextColor={colors.text + "80"}
               ref={textInputRef}
-              onSubmitEditing={(e) => addFlag(e.nativeEvent.text)}
+              onSubmitEditing={(e) => {
+                if (e.nativeEvent.text === "chat_delete_theme") {
+                  AsyncStorage.getAllKeys().then(keys => {
+                    keys.forEach(key => {
+                      if (key.startsWith("chat_theme_") || key.startsWith("theme_")) {
+                        AsyncStorage.removeItem(key);
+                      }
+                    });
+                    return;
+                  });
+                }
+                set(e.nativeEvent.text);
+                textInputRef.current?.clear();
+              }}
             />
           </NativeItem>
         </NativeList>
