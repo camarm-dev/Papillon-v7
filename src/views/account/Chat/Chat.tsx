@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {
   FlatList, Image, KeyboardAvoidingView,
+  Platform,
   ScrollView,
   TextInput, TouchableOpacity, View,
 } from "react-native";
@@ -10,12 +11,13 @@ import type { Screen } from "@/router/helpers/types";
 import {
   NativeItem,
   NativeList,
+  NativeListHeader,
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import type { ChatMessage } from "@/services/shared/Chat";
 import {createDiscussion, getChatMessages, getChats} from "@/services/chats";
-import {ChevronLeft, Send} from "lucide-react-native";
+import {ChevronLeft, FileText, Link, Paperclip, Send} from "lucide-react-native";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import {getProfileColorByName} from "@/services/local/default-personalization";
 import InitialIndicator from "@/components/News/InitialIndicator";
@@ -30,6 +32,8 @@ import MissingItem from "@/components/Global/MissingItem";
 import {DefaultTheme} from "@/consts/DefaultTheme";
 import GetThemeForChatId from "@/utils/chat/themes/GetThemeForChatId";
 import { AccountService } from "@/stores/account/types";
+import * as WebBrowser from "expo-web-browser";
+import getAndOpenFile from "@/utils/files/getAndOpenFile";
 
 const Chat: Screen<"Chat"> = ({
   navigation,
@@ -46,6 +50,19 @@ const Chat: Screen<"Chat"> = ({
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [loading, setLoading] = useState(true);
   const [chatTheme, setChatTheme] = useState(DefaultTheme);
+
+  const openUrl = (url) => {
+    if (account.service === AccountService.EcoleDirecte && Platform.OS === "ios") {
+      navigation.goBack();
+      getAndOpenFile(account, url);
+    } else {
+      WebBrowser.openBrowserAsync(url, {
+        presentationStyle: "formSheet",
+        controlsColor: theme.colors.primary
+      });
+    }
+
+  };
 
   async function refreshMessages (handlerRefresh = false) {
     if (route.params.handle.id === "new") return;
@@ -159,6 +176,33 @@ const Chat: Screen<"Chat"> = ({
             </NativeItem>
 
           </NativeList>
+          {messages[0].attachments.length > 0 && (
+            <View>
+              <NativeListHeader label="Pièces jointes" icon={<Paperclip />} />
+
+              <NativeList>
+                {messages[0].attachments.map((attachment, index) => (
+                  <NativeItem
+                    key={index}
+                    onPress={() => openUrl(attachment.url)}
+                    icon={
+                      attachment.type === "file" ?
+                        <FileText />
+                        :
+                        <Link />
+                    }
+                  >
+                    <NativeText variant="title"  numberOfLines={2}>
+                      {attachment.name}
+                    </NativeText>
+                    <NativeText variant="subtitle" numberOfLines={1}>
+                      {attachment.url}
+                    </NativeText>
+                  </NativeItem>
+                ))}
+              </NativeList>
+            </View>
+          )}
 
         </ScrollView></>}
 

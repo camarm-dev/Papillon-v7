@@ -34,9 +34,9 @@ export const getChatMessages = async (account: EcoleDirecteAccount, chat: Chat):
     subject: chat.subject,
     //@ts-ignore
     attachments: message.files.map((a) => ({
-      type: a.type,
+      type: "file", // no links as attachements in ed
       name: a.name,
-      url: ""
+      url: a.name + "\\" + a.id + "\\" + a.type
     }))
   };
 };
