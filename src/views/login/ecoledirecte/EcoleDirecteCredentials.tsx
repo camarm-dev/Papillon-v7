@@ -70,12 +70,12 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         isExternal: false,
         linkedExternalLocalIDs: [],
 
-        name: account.lastName + " " + account.firstName,
+        name: `${account.lastName} ${account.firstName}`,
         studentName: {
           first: account.firstName,
           last: account.lastName,
         },
-        className: "", // TODO ?
+        className: account.class.short,
         schoolName: account.schoolName,
 
         authentication: {
@@ -87,6 +87,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         },
         personalization: await defaultPersonalization(account)
       };
+
 
       createStoredAccount(local_account);
       setLoading(false);
