@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import type { Screen } from "@/router/helpers/types";
+import React, { useEffect } from "react";
 
-import { ScrollView, Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import LottieView from "lottie-react-native";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
 import { LinearGradient } from "expo-linear-gradient";
@@ -48,7 +47,9 @@ const DynamicWidgetsContainerCard = ({ theme }: { theme: any }) => {
           <NativeText variant="title">
             Dynamics Widgets
           </NativeText>
-          <BetaIndicator />
+          <BetaIndicator
+            colors={["#ce4ff5", "#8900f5"]}
+          />
         </View>
         <NativeText variant="subtitle">
           Choisi les widgets à afficher sur ton écran d'accueil.
