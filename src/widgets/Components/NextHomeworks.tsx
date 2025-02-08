@@ -5,7 +5,6 @@ import { Text, View } from "react-native";
 import {NativeText} from "@/components/Global/NativeComponents";
 import { WidgetProps } from "@/components/Home/Widget";
 import { useCurrentAccount } from "@/stores/account";
-import formatDate from "@/utils/format/format_date_complets";
 import {useHomeworkStore} from "@/stores/homework";
 import {dateToEpochWeekNumber} from "@/utils/epochWeekNumber";
 import {updateHomeworkForWeekInCache} from "@/services/homework";
@@ -136,6 +135,7 @@ const NextHomeworksWidget = forwardRef(({
           variant="subtitle"
           style={{
             width: "100%",
+            opacity: 1
           }}
           numberOfLines={2}
         >
