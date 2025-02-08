@@ -25,7 +25,7 @@ const LastNewsWidget = forwardRef(({
   }));
 
   const lastNews = useMemo(() => {
-    return news.length > 0 ? news.sort((a, b) => a.date > b.date ? -1 : 0)[0] : null;
+    return news.length > 0 ? news.sort((a, b) => a.date > b.date ? -1 : 0)[0] : undefined;
   }, [news]);
 
   useEffect(() => {
@@ -47,8 +47,11 @@ const LastNewsWidget = forwardRef(({
 
   useEffect(() => {
     const maxEventAge = account?.personalization.widgets?.maxEventAge || 5;
-    // TODO
-    const eventAge = Math.round((new Date().getTime() - (lastNews?.date.getTime() || 0)) / (24 * 60 * 60 * 1000));
+    let lastNewsDate = 0;
+    if (lastNews) {
+      lastNewsDate = lastNews.date.getTime();
+    }
+    const eventAge = Math.round((new Date().getTime() - lastNewsDate) / (24 * 60 * 60 * 1000));
     const shouldHide = !lastNews || !account?.personalization.widgets?.lastNews || eventAge > maxEventAge;
     setHidden(shouldHide);
   }, [lastNews, setHidden]);
