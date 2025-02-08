@@ -31,10 +31,18 @@ import {
   Sparkles, SunMoon,
   SwatchBook,
   WandSparkles,
-  X
+  X,
+  Grid2x2Check
 } from "lucide-react-native";
 
-import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import {
+  NativeIcon,
+  NativeIconGradient,
+  NativeItem,
+  NativeList,
+  NativeListHeader,
+  NativeText
+} from "@/components/Global/NativeComponents";
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { useTheme } from "@react-navigation/native";
@@ -114,6 +122,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           color: "#D79400",
           label: "Services externes",
           onPress: () => navigation.navigate("SettingsExternalServices"),
+        },
+        {
+          icon: <NativeIconGradient icon={<Grid2x2Check />} colors={["#ba00f1", "#8900f5"]}/>,
+          color: "#a500f5",
+          label: "Dynamic Widgets",
+          onPress: () => navigation.navigate("SettingsWidgets"),
         },
       ],
     },

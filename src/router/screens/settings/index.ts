@@ -27,6 +27,7 @@ import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
 import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
 import SettingsApparence from "@/views/settings/SettingsApparence";
 import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
+import SettingsWidgets from "@/views/settings/SettingsWidgets";
 
 const settingsScreens = [
   createScreen("Settings", Settings, {
@@ -131,6 +132,9 @@ const settingsScreens = [
   }),
   createScreen("SettingsApparence", SettingsApparence, {
     headerTitle: "Mode d'affichage",
+  }),
+  createScreen("SettingsWidgets", SettingsWidgets, {
+    headerTitle: "Dynamic Widgets",
   })
 ] as const;
 
