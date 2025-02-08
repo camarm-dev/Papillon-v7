@@ -48,12 +48,13 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
     }
 
     const todayCourses = timetables[currentWeekNumber]
-      // .filter(c => c.endTimestamp > today)
+      .filter(c => c.endTimestamp > today)
       .sort((a, b) => a.startTimestamp - b.startTimestamp);
 
+    todayCourses.splice(0, 1); // Deleting next course, because it is already showed by next course widget
+
     let updatedChangedCourse = todayCourses
-      .splice(todayCourses.length - 1, 1) // Deleting next course, because it is showedby next course widget
-      .find(course => course.status); // Status is undefined if course is "normal"
+      .find(course => course.status != undefined || course.statusText != undefined); // Status is undefined if course is "normal"
 
     setChangedCourse(updatedChangedCourse || null);
     setHidden(!updatedChangedCourse);
@@ -99,7 +100,8 @@ const NextCourseLesson: React.FC<{
 }> = ({ nextCourse }) => {
   const [subjectData, setSubjectData] = useState({ color: "#888888", pretty: "Matière inconnue" });
   const colors = useTheme().colors;
-  const [prettyTime, setPrettyTime] = useState("");
+  const startDate = new Date(nextCourse.startTimestamp);
+  const prettyTime = `${lz(startDate.getHours())}:${lz(startDate.getMinutes())}`;
 
   useEffect(() => {
     const fetchSubjectData = async () => {
@@ -109,82 +111,80 @@ const NextCourseLesson: React.FC<{
     fetchSubjectData();
   }, [nextCourse.title]);
 
-  useEffect(() => {
-    const updateRemainingTime: () => number | NodeJS.Timeout = () => {
-      const now = new Date().getTime();
-      const distance = nextCourse.startTimestamp - now;
-      const end = nextCourse.endTimestamp - now;
-
-      if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-        if (days > 0) {
-          setPrettyTime(`dans ${days} jour(s)`);
-        } else if (hours > 0) {
-          setPrettyTime(`dans ${hours}h ${lz(minutes)}min`);
-        } else {
-          setPrettyTime(`dans ${minutes}min`);
-        }
-      } else if (end > 0) {
-        const hours = Math.floor((end % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((end % (1000 * 60 * 60)) / (1000 * 60));
-        setPrettyTime(`reste ${hours}h ${lz(minutes)}min`);
-      } else {
-        setPrettyTime("Terminé");
-      }
-
-      // Schedule next update at the start of the next minute
-      const nextMinute = new Date(now);
-      nextMinute.setSeconds(0);
-      nextMinute.setMilliseconds(0);
-      nextMinute.setMinutes(nextMinute.getMinutes() + 1);
-      const delay = nextMinute.getTime() - now;
-      return setTimeout(updateRemainingTime, delay);
-    };
-
-    const timeout = updateRemainingTime();
-
-    return () => clearTimeout(timeout);
-  }, [nextCourse]);
-
   return (
-    <View style={{ width: "100%", marginTop: 10, flex: 1, flexDirection: "row", gap: 10 }}>
-      <ColorIndicator color={subjectData.color} style={{ flex: 0 }} />
-      <View style={{ flex: 1, width: "100%", justifyContent: "space-between" }}>
-        <Text numberOfLines={1} style={{ color: colors.text, fontSize: 17, fontFamily: "semibold" }}>
-          {subjectData.pretty}
+    <View style={{ width: "100%", flex: 1, flexDirection: "column", gap: 8 }}>
+      <View style={{
+        width: "100%",
+        marginTop: 9,
+        flex: 1,
+        flexDirection: "row",
+        gap: 10
+      }}>
+        <ColorIndicator color={subjectData.color} style={{ flex: 0 }} />
+        <View style={{ flex: 1, width: "100%", justifyContent: "center" }}>
+          <Text numberOfLines={1} style={{ color: colors.text, fontSize: 17, fontFamily: "semibold" }}>
+            {subjectData.pretty}
+          </Text>
+          <View style={{
+            display: "flex",
+            flexDirection: "row",
+            paddingRight: 15,
+            gap: 5
+          }}>
+            <View style={{
+              marginTop: 2,
+              paddingHorizontal: 7,
+              paddingVertical: 3,
+              backgroundColor: subjectData.color + "33",
+              borderRadius: 8,
+              borderCurve: "continuous",
+              alignSelf: "flex-start",
+            }}>
+              <Text
+                numberOfLines={1}
+                style={{
+                  color: subjectData.color,
+                  fontSize: 15,
+                  fontFamily: "semibold",
+                }}
+              >
+                {nextCourse.room
+                  ? nextCourse.room.includes(",")
+                    ? "Plusieurs salles dispo."
+                    : nextCourse.room
+                  : "Salle inconnue"}
+              </Text>
+            </View>
+            {nextCourse.statusText && (
+              <View style={{
+                backgroundColor: nextCourse.status === TimetableClassStatus.CANCELED ? "#E8BEBF" : nextCourse.status === TimetableClassStatus.TEST ? "#f4b490" : subjectData.color,
+                marginTop: 2,
+                paddingHorizontal: 7,
+                paddingVertical: 3,
+                borderRadius: 8,
+                width: "50%",
+                borderCurve: "continuous",
+                alignSelf: "flex-start",
+              }}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: nextCourse.status === TimetableClassStatus.CANCELED ? "#B42828" : nextCourse.status === TimetableClassStatus.TEST ? "#d2691e" : "#fff",
+                    fontSize: 14.5,
+                    fontFamily: "semibold",
+                  }}>
+                  {nextCourse.statusText}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8, opacity: 0.5 }}>
+        <Clock size={20} color={colors.text} />
+        <Text numberOfLines={1} style={{ color: colors.text, fontSize: 15, fontFamily: "medium" }}>
+          à {prettyTime}
         </Text>
-        <View style={{
-          paddingHorizontal: 7,
-          paddingVertical: 3,
-          backgroundColor: subjectData.color + "33",
-          borderRadius: 8,
-          borderCurve: "continuous",
-          alignSelf: "flex-start",
-        }}>
-          <Text
-            numberOfLines={1}
-            style={{
-              color: subjectData.color,
-              fontSize: 15,
-              fontFamily: "semibold",
-            }}
-          >
-            {nextCourse.room
-              ? nextCourse.room.includes(",")
-                ? "Plusieurs salles dispo."
-                : nextCourse.room
-              : "Salle inconnue"}
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, opacity: 0.5 }}>
-          <Clock size={20} color={colors.text} />
-          <Text numberOfLines={1} style={{ color: colors.text, fontSize: 15, fontFamily: "medium" }}>
-            {prettyTime}
-          </Text>
-        </View>
       </View>
     </View>
   );
