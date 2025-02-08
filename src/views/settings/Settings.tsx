@@ -34,7 +34,7 @@ import {
   SwatchBook,
   WandSparkles,
   X,
-  Grid2x2Check
+  Grid2x2Check,
   Blocks,
   HelpCircle
 } from "lucide-react-native";
