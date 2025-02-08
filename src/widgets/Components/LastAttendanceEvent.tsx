@@ -147,7 +147,7 @@ const LastAttendanceEventWidget = forwardRef(({
         justifyContent: "space-between",
         alignItems: "center"
       }}>
-        <View
+        {lastEvent.number && <View
           style={{
             flexDirection: "row",
             alignItems: "flex-end",
@@ -177,7 +177,7 @@ const LastAttendanceEventWidget = forwardRef(({
           >
             {lastEvent.unit}
           </Text>
-        </View>
+        </View>}
         {!lastEvent.justified && <View
           style={{
             backgroundColor: "#D10000",
@@ -192,7 +192,7 @@ const LastAttendanceEventWidget = forwardRef(({
             variant="body"
             color="#fff"
           >
-            Non justifié
+            {lastEvent.number ? "Non justifié" : "À justifier"}
           </NativeText>
         </View>}
       </View>
