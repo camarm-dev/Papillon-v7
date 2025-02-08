@@ -1,5 +1,5 @@
-import React from "react";
-import { Text, ScrollView, View, StyleSheet, Switch } from "react-native";
+import React, {useRef, useState} from "react";
+import {Text, ScrollView, View, StyleSheet, Switch, TextInput} from "react-native";
 import { useTheme } from "@react-navigation/native";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,9 +7,12 @@ import { NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeTex
 import {
   CheckCircle,
   EyeOff,
-  GraduationCap, Hourglass,
+  GraduationCap,
+  Hourglass,
   LucideIcon,
-  Newspaper
+  Newspaper,
+  CalendarDays,
+  Book
 } from "lucide-react-native";
 import { useCurrentAccount } from "@/stores/account";
 import {WidgetsSettings} from "@/stores/account/types";
@@ -32,6 +35,9 @@ const SettingsWidgets: Screen<"SettingsWidgets"> = ({ navigation }) => {
 
   const widgetsConfiguration = account?.personalization?.widgets || {};
 
+  const [eventMaxAge, setEventMaxAge] = useState(widgetsConfiguration.maxEventAge || 5);
+  const eventMaxAgeRef = useRef<TextInput>(null);
+
   const widgets: Widget[] = [
     {
       name: "Vie scolaire",
@@ -44,6 +50,18 @@ const SettingsWidgets: Screen<"SettingsWidgets"> = ({ navigation }) => {
       icon: Newspaper,
       description: "Affiche la dernière actualité.",
       key: "lastNews"
+    },
+    {
+      name: "Changements EDT",
+      icon: CalendarDays,
+      description: "Affiche les changements de l'EDT du jour.",
+      key: "timetableChangements"
+    },
+    {
+      name: "Devoirs à faire",
+      icon: Book,
+      description: "Affiche les prochains devoirs non-effectués.",
+      key: "nextHomeworks"
     },
     {
       name: "Évaluations",
@@ -112,12 +130,8 @@ const SettingsWidgets: Screen<"SettingsWidgets"> = ({ navigation }) => {
           </NativeText>
         </NativeItem>
         <NativeItem
-          trailing={
-            <Switch
-              value={widgetsConfiguration.deleteAfterRead ?? false}
-              onValueChange={(value) => mutateProperty("personalization", { widgets: {...widgetsConfiguration, deleteAfterRead: value } })}
-            />
-          }
+          onPress={() => eventMaxAgeRef.current?.focus()}
+          chevron={false}
           leading={
             <NativeIconGradient
               icon={<Hourglass />}
@@ -129,8 +143,29 @@ const SettingsWidgets: Screen<"SettingsWidgets"> = ({ navigation }) => {
             Masquer les évènements trop vieux
           </NativeText>
           <NativeText variant="subtitle">
-            Affiche uniquement les évènements des {widgetsConfiguration.maxEventAge || 5} derniers jours.
+            Affiche uniquement les évènements des {eventMaxAge} derniers jours.
           </NativeText>
+          <TextInput
+            style={{
+              fontSize: 16,
+              fontFamily: "semibold",
+              color: theme.colors.text,
+            }}
+            onKeyPress={(event) => {
+              if (!/[0-9]/.test(event.nativeEvent.key)) {
+                event.preventDefault();
+              }
+            }}
+            placeholder="5"
+            keyboardType="numeric"
+            placeholderTextColor={theme.colors.text + "80"}
+            value={eventMaxAge.toString()}
+            onChangeText={(value) => {
+              setEventMaxAge(Number(value));
+              mutateProperty("personalization", { widgets: {...widgetsConfiguration, maxEventAge: Number(value) } });
+            }}
+            ref={eventMaxAgeRef}
+          />
         </NativeItem>
       </NativeList>
     </ScrollView>

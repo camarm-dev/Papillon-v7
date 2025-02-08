@@ -36,7 +36,9 @@ export interface PapillonIcalURL {
 export interface WidgetsSettings {
   lastNews?: boolean
   lastAttendanceEvent?: boolean
+  timetableChangements?: boolean
   nextTest?: boolean
+  nextHomeworks?: boolean
   maxEventAge?: number
   deleteAfterRead?: boolean
 }
