@@ -50,6 +50,7 @@ const LastNewsWidget = forwardRef(({
 
   useEffect(() => {
     const maxEventAge = account?.personalization.widgets?.maxEventAge || 5;
+    // TODO
     const eventAge = Math.round((new Date().getTime() - (lastNews?.date.getTime() || 0)) / (24 * 60 * 60 * 1000));
     const shouldHide = !lastNews || !account?.personalization.widgets?.lastNews || eventAge > maxEventAge;
     setHidden(shouldHide);

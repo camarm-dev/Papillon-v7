@@ -48,7 +48,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
     }
 
     const todayCourses = timetables[currentWeekNumber]
-      .filter(c => c.endTimestamp > today)
+      // .filter(c => c.endTimestamp > today)
       .sort((a, b) => a.startTimestamp - b.startTimestamp);
 
     let updatedChangedCourse = todayCourses
