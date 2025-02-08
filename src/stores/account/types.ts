@@ -57,7 +57,8 @@ export interface Personalization {
   widgets?: {
     lastNews?: boolean,
     lastAttendanceEvent?: boolean,
-    nextTest?: boolean
+    nextTest?: boolean,
+    maxEventAge?: number
   }
   icalURLs: PapillonIcalURL[],
   tabs: Tab[],
