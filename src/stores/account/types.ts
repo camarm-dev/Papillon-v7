@@ -53,6 +53,11 @@ export interface Personalization {
     grades?: boolean
     timetable?: boolean
     attendance?: boolean
+  },
+  widgets?: {
+    lastNews?: boolean,
+    lastAttendanceEvent?: boolean,
+    nextTest?: boolean
   }
   icalURLs: PapillonIcalURL[],
   tabs: Tab[],
