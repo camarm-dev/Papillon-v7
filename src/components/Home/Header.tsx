@@ -246,7 +246,8 @@ const Header: React.FC<{
             {Widgets.map((widget, index) => (
               <Widget
                 key={index}
-                widget={widget}
+                widget={widget.component}
+                isLarge={widget.isLarge}
                 navigation={navigation}
               />
             ))}
@@ -254,6 +255,7 @@ const Header: React.FC<{
             {addons.map((addon, index) => (
               <Widget
                 key={index}
+                isLarge={false}
                 widget={forwardRef(() => (
                   <View style={{flex: 1}} onLayout={() => {
                     let temp = addonsTitle;
