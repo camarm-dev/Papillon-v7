@@ -2,15 +2,12 @@ import { useTheme } from "@react-navigation/native";
 import { Newspaper, Clock8, Paperclip } from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { Text, View } from "react-native";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
-
-import {NativeIcon, NativeText} from "@/components/Global/NativeComponents";
+import {NativeText} from "@/components/Global/NativeComponents";
 import { WidgetProps } from "@/components/Home/Widget";
 import { useCurrentAccount } from "@/stores/account";
 import {useNewsStore} from "@/stores/news";
 import {updateNewsInCache} from "@/services/news";
 import formatDate from "@/utils/format/format_date_complets";
-import {log} from "@/utils/logger/logger";
 
 const LastNewsWidget = forwardRef(({
   setLoading,
