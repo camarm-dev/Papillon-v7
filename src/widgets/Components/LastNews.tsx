@@ -88,7 +88,7 @@ const LastNewsWidget = forwardRef(({
           justifyContent: "space-between",
           width: "100%",
           marginTop: "auto",
-          gap: 5,
+          gap: 2,
         }}
         layout={LinearTransition}
       >
@@ -127,16 +127,6 @@ const LastNewsWidget = forwardRef(({
           >
             {formatDate(lastNews.date.toString())}
           </NativeText>
-
-          {/*<NativeText*/}
-          {/*  numberOfLines={1}*/}
-          {/*  variant="subtitle"*/}
-          {/*  style={{*/}
-          {/*    width: "40%",*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {lastNews.author}*/}
-          {/*</NativeText>*/}
         </View>
       </Reanimated.View>
     </>
