@@ -4,7 +4,7 @@ import type { Homework } from "./shared/Homework";
 import { error } from "@/utils/logger/logger";
 import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
-import { dateToEpochWeekNumber, epochWNToPronoteWN } from "@/utils/epochWeekNumber";
+import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { useClassSubjectStore } from "@/stores/classSubject";
 
@@ -51,7 +51,7 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
     useHomeworkStore.getState().updateHomeworks(dateToEpochWeekNumber(date), homeworks);
   }
   catch (err) {
-    error(`not updated, see:${err}`, "updateHomeworkForWeekInCache");
+    error(`homeworks not updated, see:${err}`, "updateHomeworkForWeekInCache");
   }
 }
 

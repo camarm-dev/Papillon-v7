@@ -26,7 +26,7 @@ import {
   Hourglass,
   Info,
   LinkIcon,
-  PersonStanding,
+  User2,
   Users,
 } from "lucide-react-native";
 
@@ -42,14 +42,7 @@ import { useClassSubjectStore } from "@/stores/classSubject";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
-
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
-const getDuration = (minutes: number): string => {
-  const durationHours = Math.floor(minutes / 60);
-  const durationRemainingMinutes = minutes % 60;
-  return `${durationHours}h ${lz(durationRemainingMinutes)} min`;
-};
+import { getDuration } from "@/utils/format/course_duration";
 
 const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -173,7 +166,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
           enabled: Boolean(lesson.room?.trim()), // Check if lesson.room exists, is not null, and not empty
         },
         {
-          icon: <PersonStanding />,
+          icon: <User2 />,
           text: lesson.teacher?.includes(",") ? "Professeurs" : "Professeur",
           value: lesson.teacher || "Aucun",
           enabled: Boolean(lesson.teacher?.trim()), // Check if lesson.teacher exists, is not null, and not empty.

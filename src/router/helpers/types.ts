@@ -79,7 +79,6 @@ export type RouteParameters = {
   // account.index
   Home: undefined;
   HomeScreen?: { onboard: boolean };
-  NoteReaction: undefined;
 
   Lessons?: { outsideNav?: boolean };
   LessonsImportIcal: {
@@ -88,6 +87,7 @@ export type RouteParameters = {
     autoAdd?: boolean;
   };
   LessonDocument: { lesson: Homework };
+  Week: { outsideNav?: boolean };
 
   Homeworks?: { outsideNav?: boolean };
   HomeworksDocument: { homework: Homework };
@@ -101,6 +101,7 @@ export type RouteParameters = {
     grade: Grade;
     allGrades?: Grade[];
   };
+  GradeReaction: { grade: Grade };
 
   Evaluation: { outsideNav?: boolean };
   EvaluationDocument: {
@@ -132,12 +133,13 @@ export type RouteParameters = {
   SettingsAddons: undefined;
   SettingsDevLogs: undefined;
   SettingsDonorsList: undefined;
+  SettingsReactions: undefined;
   SettingsApparence: undefined;
   SettingsWidgets: undefined;
 
   Menu?: undefined;
   RestaurantQrCode: {
-    QrCodes: string[];
+    QrCodes: Array<string | Blob>;
   };
   RestaurantHistory: {
     histories: ReservationHistory[];

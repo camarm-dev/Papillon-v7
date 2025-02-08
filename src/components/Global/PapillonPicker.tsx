@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Platform, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
@@ -8,20 +8,21 @@ import Reanimated, { LinearTransition, type AnimatedStyle } from "react-native-r
 import { NativeText } from "./NativeComponents";
 
 import { BlurView } from "expo-blur";
-import * as Haptics from "expo-haptics";
 import { Check } from "lucide-react-native";
 
-type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown }[];
+export type PickerDataItem = string | { label: string, icon?: JSX.Element, onPress?: () => unknown, checked?: boolean };
+
+type PickerData = PickerDataItem[];
 
 interface PapillonPickerProps {
   children: React.ReactNode
   data: PickerData
-  selected?: string
+  selected?: PickerDataItem
   contentContainerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
   delay?: number,
   direction?: "left" | "right",
   animated?: boolean,
-  onSelectionChange?: (item: string) => unknown
+  onSelectionChange?: any
 }
 
 const PapillonPicker: React.FC<PapillonPickerProps> = ({
@@ -38,7 +39,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
   const [contentHeight, setContentHeight] = useState(0);
   const [opened, setOpened] = useState(false);
 
-  const handleSelectionChange = (item: string) => {
+  const handleSelectionChange = (item: PickerDataItem) => {
     if (onSelectionChange) {
       setTimeout(() => {
         onSelectionChange(item);
@@ -92,7 +93,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             }}
             tint={theme.dark ? "dark" : "light"}
           >
-            {data.map((item, index) => {
+            {data.filter((item) => item !== null).map((item, index) => {
               // check if item is a string or a component
               const isNotString = typeof item !== "string";
 
@@ -116,7 +117,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
                       onPressItem();
                     } : () => {
                       setOpened(false);
-                      handleSelectionChange(item as string);
+                      handleSelectionChange(item);
                     }}
                     style={[
                       styles.item
@@ -137,7 +138,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
 
                     <View style={{ flex: 1 }} />
 
-                    {item === selected && (
+                    {isNotString ? item.checked : item === selected && (
                       <Check
                         size={20}
                         strokeWidth={2.5}

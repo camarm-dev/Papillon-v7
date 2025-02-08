@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, StyleSheet, Text } from "react-native";
+import { View } from "react-native";
 
 import { WebView } from "react-native-webview";
 
@@ -36,6 +36,8 @@ const UnivRennes1_Login: Screen<"UnivRennes1_Login"> = ({ navigation }) => {
           name: "Université de Rennes",
           rawData: data
         },
+
+        providers: ["ical", "moodle"],
 
         localID: uuid(),
         service: AccountService.Local,

@@ -5,13 +5,34 @@ import  {
 } from "@/services/shared/Grade";
 import uuid from "@/utils/uuid-v4";
 
-export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
+export const saveIUTLanGrades = async (account: LocalAccount, periodName: string): Promise<{
   grades: Grade[];
   averages: AverageOverview;
 }> => {
   try {
+    // console.log(periodName);
+
     // Il faudrait peut-être penser à typer cette partie, tous les types sont any :(
-    const scodocData = account.identityProvider.rawData;
+    const scodocData = account.serviceData.semestres[periodName];
+
+    if (!scodocData) {
+      return {
+        grades: [],
+        averages: {
+          classOverall: {
+            value: null,
+            disabled: true,
+            status: null,
+          },
+          overall: {
+            value: null,
+            disabled: true,
+            status: null,
+          },
+          subjects: []
+        }
+      };
+    }
 
     const ressources = (scodocData["relevé"] as any).ressources;
     const saes = (scodocData["relevé"] as any).saes;
@@ -34,10 +55,12 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
       classOverall: {
         value: null,
         disabled: true,
+        status: null,
       },
       overall: {
         value: null,
         disabled: true,
+        status: null,
       },
       subjects: []
     };
@@ -63,24 +86,29 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
           student: {
             value: parseFloat(note.note.value),
             disabled: parsedStudent === null || isNaN(parsedStudent),
+            status: null,
           },
           min: {
             value: parseFloat(note.note.min),
             disabled: parsedMin === null || isNaN(parsedMin),
+            status: null,
           },
           max: {
             value: parseFloat(note.note.max),
             disabled: parsedMax === null || isNaN(parsedMax),
+            status: null,
           },
           average: {
             value: parseFloat(note.note.moy),
             disabled: parsedAverage === null || isNaN(parsedAverage),
+            status: null,
           },
 
           id: uuid(),
           outOf: {
             value: 20,
             disabled: false,
+            status: null,
           },
           description: note.description,
           timestamp: new Date(note.date).getTime(),
@@ -112,24 +140,29 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
         classAverage: {
           value: classAverage,
           disabled: false,
+          status: null,
         },
         color: "#888888",
         max: {
           value: max,
           disabled: false,
+          status: null,
         },
         subjectName: subject.name,
         min: {
           value: min,
           disabled: false,
+          status: null,
         },
         average: {
           value: average,
           disabled: false,
+          status: null,
         },
         outOf: {
           value: 20,
           disabled: false,
+          status: null,
         },
       });
     });
@@ -144,13 +177,40 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
         classOverall: {
           value: null,
           disabled: true,
+          status: null,
         },
         overall: {
           value: null,
           disabled: true,
+          status: null,
         },
         subjects: []
       }
     };
   }
+};
+
+export const saveIUTLanPeriods = async (account: LocalAccount): Promise<any> => {
+  const scodocData = account.identityProvider.rawData;
+
+  const semestres = (scodocData["semestres"] as any).map((semestre: any) => {
+    return {
+      name: "Semestre " + semestre.semestre_id,
+      startTimestamp: 1609459200,
+      endTimestamp: 1622505600
+    };
+  });
+
+  const finalData = {
+    periods: semestres.length > 0 ? semestres : [
+      {
+        name: "Toutes",
+        startTimestamp: 1609459200,
+        endTimestamp: 1622505600
+      },
+    ],
+    defaultPeriod: semestres.length > 0 ? semestres[semestres.length - 1].name : "Toutes"
+  };
+
+  return finalData;
 };

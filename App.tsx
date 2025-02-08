@@ -7,8 +7,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import {AccountService, PrimaryAccount} from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
-import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
+import { registerBackgroundTasks } from "@/background/BackgroundTasks";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -101,13 +102,13 @@ export default function App () {
       "VirtualizedLists should never be nested",
       "TNodeChildrenRenderer: Support for defaultProps",
       "Service not implemented",
-      "Linking found multiple possible"
+      "Linking found multiple possible",
+      "[Reanimated] Property ",
     ]);
 
-    expoGoWrapper(async () => {
-      const { registerBackgroundTasks } = await import("@/background/BackgroundTasks");
+    if (!isExpoGo()) {
       registerBackgroundTasks();
-    });
+    };
   }, []);
 
   const applyGlobalPolyfills = useCallback(() => {

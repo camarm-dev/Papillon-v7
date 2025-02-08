@@ -146,6 +146,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
         style={{
           flex: 1,
           paddingTop: 106 - 16,
+          backgroundColor: theme.colors.background,
         }}
       >
         <View
@@ -178,7 +179,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                         }));
                       }
                     }}
-                    color="green"
+                    color={theme.colors.primary}
                   />
                 }
               >
@@ -186,7 +187,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                   J'ai lu et pris connaissance
                 </NativeText>
                 <NativeText variant="subtitle">
-                  Vous confirmez avoir lu et votre établissement peut en être notifié.
+                  Tu confirmes avoir lu et ton établissement peut en être notifié.
                 </NativeText>
               </NativeItem>
             </NativeList>

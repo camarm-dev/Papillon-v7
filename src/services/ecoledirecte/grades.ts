@@ -3,7 +3,6 @@ import type { Period } from "@/services/shared/Period";
 import  {
   type AverageOverview,
   type Grade,
-  GradeInformation,
   type GradeValue,
 } from "@/services/shared/Grade";
 import ecoledirecte, {
@@ -26,19 +25,19 @@ const decodeGradeValue = (
   value: ecoledirecte.GradeValue | undefined,
 ): GradeValue => {
   if (typeof value === "undefined")
-    return { value: null, disabled: true };
+    return { value: null, disabled: true, status: null };
 
   switch (value.kind) {
     case GradeKind.Grade:
-      return { value: value.points ?? 0, disabled: false };
+      return { value: value.points ?? 0, disabled: false, status: null };
     case GradeKind.Absent:
-      return { value: value.points ?? 0, disabled: true, information: GradeInformation.Absent };
+      return { value: value.points ?? 0, disabled: true, status: "Abs" };
     case GradeKind.Exempted:
-      return { value: value.points ?? 0, disabled: true, information: GradeInformation.Exempted };
+      return { value: value.points ?? 0, disabled: true, status: "Disp" };
     case GradeKind.NotGraded:
-      return { value: value.points ?? 0, disabled: true, information: GradeInformation.NotGraded };
+      return { value: value.points ?? 0, disabled: true, status: "N. Not" };
     default:
-      return { value: value.points ?? 0, disabled: true };
+      return { value: value.points ?? 0, disabled: true, status: null };
   }
 };
 
@@ -46,7 +45,7 @@ const getGradeValue = (value: number | string | undefined): GradeValue => {
   return {
     disabled: false,
     value: value ? Number(value) : 0,
-    information: undefined,
+    status: null,
   };
 };
 
@@ -123,7 +122,7 @@ export const getGradesAndAverages = async (
         isOptional: g.isOptional,
 
         outOf: getGradeValue(g.outOf),
-        coefficient: g.coefficient,
+        coefficient: g.coefficient ?? 1,
 
         student: decodeGradeValue(g.value),
         average: decodeGradeValue(g.average),
