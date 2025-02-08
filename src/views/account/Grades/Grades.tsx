@@ -33,6 +33,8 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GradesScodocUE from "./Atoms/GradesScodocUE";
+import {hasFeatureAccountSetup} from "@/utils/multiservice";
+import {MultiServiceFeature} from "@/stores/multiService/types";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
 const GradesLatestList = lazy(() => import("./Latest/LatestGrades"));
@@ -45,6 +47,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
   const outsideNav = route.params?.outsideNav;
 
   const account = useCurrentAccount((store) => store.account!);
+  const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Grades, account.localID) : true;
   const defaultPeriod = useGradesStore((store) => store.defaultPeriod);
   const periods = useGradesStore((store) => store.periods);
   const averages = useGradesStore((store) => store.averages);
@@ -203,12 +206,21 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
           >
             {(!grades[selectedPeriod] || grades[selectedPeriod].length === 0) &&
 							!isLoading &&
-							!isRefreshing && (
+							!isRefreshing && hasServiceSetup && (
               <MissingItem
                 style={{ marginTop: 24, marginHorizontal: 16 }}
                 emoji="📚"
                 title="Aucune note disponible"
                 description="La période sélectionnée ne contient aucune note."
+              />
+            )}
+
+            {!hasServiceSetup && (
+              <MissingItem
+                title="Aucun service connecté"
+                description="Tu n'as pas encore paramétré de service pour cette fonctionnalité."
+                emoji="🤷"
+                style={{ marginTop: 24, marginHorizontal: 16 }}
               />
             )}
 

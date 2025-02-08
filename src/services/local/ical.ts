@@ -102,7 +102,8 @@ export const fetchIcalData = async (
   }
 
   const newData = nonEmptyWeeks.reduce(
-    (acc, { epochWeekNumber, courses }) => {
+  // Maybe add better typing, I added any type because didn't understand following lines :(
+    (acc: any, { epochWeekNumber, courses }) => {
       acc[epochWeekNumber] = courses;
       return acc;
     },

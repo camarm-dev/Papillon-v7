@@ -18,12 +18,15 @@ import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
 import {Information} from "@/services/shared/Information";
 import {AccountService} from "@/stores/account/types";
+import {hasFeatureAccountSetup} from "@/utils/multiservice";
+import {MultiServiceFeature} from "@/stores/multiService/types";
 
 type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
 
 const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const theme = useTheme();
   const account = useCurrentAccount((store) => store.account!);
+  const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.News, account.localID) : true;
   const informations = useNewsStore((store) => store.informations);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -179,7 +182,15 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         </Reanimated.View>
       )}
 
-      {!isLoading && !hasNews && <NoNewsMessage />}
+      {hasServiceSetup ?
+        !isLoading && !hasNews && <NoNewsMessage />
+        :
+        <MissingItem
+          title="Aucun service connecté"
+          description="Tu n'as pas encore paramétré de service pour cette fonctionnalité."
+          emoji="🤷"
+        />
+      }
     </Reanimated.ScrollView>
   );
 };

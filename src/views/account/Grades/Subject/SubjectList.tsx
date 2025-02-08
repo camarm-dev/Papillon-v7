@@ -45,6 +45,8 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     return null;
   }
 
+  index = index || 0;
+
   return (
     <NativeList
       animated

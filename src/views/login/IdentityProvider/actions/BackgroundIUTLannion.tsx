@@ -125,7 +125,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
 
   const processSemestre = async (data: any) => {
     // ajouter le semestre ici
-    const newServiceData = account?.serviceData || {};
+    const newServiceData = account?.serviceData || {} as any;
 
     if (!newServiceData["semestres"]) {
       newServiceData["semestres"] = {};
@@ -203,7 +203,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
           { name: "Attendance", enabled: true },
           { name: "Menu", enabled: true }
         ]
-      })
+      }),
+      serviceData: {}
     };
 
     // https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/pn8d0kn8.shu

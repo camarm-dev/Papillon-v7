@@ -34,8 +34,9 @@ import {
   SwatchBook,
   WandSparkles,
   X,
-  HelpCircle,
   Grid2x2Check
+  Blocks,
+  HelpCircle
 } from "lucide-react-native";
 
 import {
@@ -218,6 +219,13 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           label: "Papillon Magic (Bêta)",
           description: "Fonctionnalités intelligentes",
           onPress: () => navigation.navigate("SettingsMagic"),
+        },
+        {
+          icon: <Blocks />,
+          color: "#1f76ce",
+          label: "Multiservice (Bêta)",
+          description: "Connecte plusieurs services en un seul espace de travail",
+          onPress: () => navigation.navigate("SettingsMultiService"),
         },
       ],
     },

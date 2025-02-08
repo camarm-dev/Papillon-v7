@@ -33,11 +33,13 @@ import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import {Homework} from "@/services/shared/Homework";
-import {Account} from "@/stores/account/types";
+import {Account, AccountService} from "@/stores/account/types";
 import {Screen} from "@/router/helpers/types";
 import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {hasFeatureAccountSetup} from "@/utils/multiservice";
+import {MultiServiceFeature} from "@/stores/multiService/types";
 
 type HomeworksPageProps = {
   index: number;
@@ -70,6 +72,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
   const theme = useTheme();
   const account = useCurrentAccount(store => store.account!);
+  const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Homeworks, account.localID) : true;
   const homeworks = useHomeworkStore(store => store.homeworks);
 
   // @ts-expect-error
@@ -301,12 +304,17 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                   title="Il ne reste rien à faire"
                   description="Il n'y a aucun devoir non terminé pour cette semaine."
                 />
-                :
-                <MissingItem
-                  emoji="📚"
-                  title="Aucun devoir"
-                  description="Il n'y a aucun devoir pour cette semaine."
-                />}
+                : hasServiceSetup ?
+                  <MissingItem
+                    emoji="📚"
+                    title="Aucun devoir"
+                    description="Il n'y a aucun devoir pour cette semaine."
+                  />
+                  : <MissingItem
+                    title="Aucun service connecté"
+                    description="Tu n'as pas encore paramétré de service pour cette fonctionnalité."
+                    emoji="🤷"
+                  />}
           </Reanimated.View>
         }
       </ScrollView>

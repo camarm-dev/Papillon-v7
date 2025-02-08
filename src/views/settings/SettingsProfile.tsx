@@ -108,7 +108,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
       mutateProperty("personalization", {
         ...account.personalization,
         profilePictureB64: img,
-      });
+      }, true);
     }
 
     setLoadingPic(false);

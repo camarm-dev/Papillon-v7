@@ -35,6 +35,8 @@ import { SquarePen } from "lucide-react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { TabLocation } from "pawnote";
+import {hasFeatureAccountSetup} from "@/utils/multiservice";
+import {MultiServiceFeature} from "@/stores/multiService/types";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -51,6 +53,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
   const { colors } = theme;
 
   const account = useCurrentAccount((state) => state.account!);
+  const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Chats, account.localID) : true;
 
   const [chats, setChats] = useState<Chat[] | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -122,7 +125,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
             padding: 20,
           }}
         >
-          {!supported ? (
+          {hasServiceSetup && !supported ? (
             <MissingItem
               emoji="🚧"
               title="Fonctionnalité en construction"
@@ -131,7 +134,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
               exiting={animPapillon(FadeOut)}
               style={{ paddingVertical: 26 }}
             />
-          ) : !enabled && (
+          ) : hasServiceSetup && !enabled && (
             <MissingItem
               emoji="💬"
               title="Discussions désactivées"
@@ -139,6 +142,14 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
               entering={animPapillon(FadeInDown)}
               exiting={animPapillon(FadeOut)}
               style={{ paddingVertical: 26 }}
+            />
+          )}
+          {!hasServiceSetup && (
+            <MissingItem
+              title="Aucun service connecté"
+              description="Tu n'as pas encore paramétré de service pour cette fonctionnalité."
+              emoji="🤷"
+              style={{ marginTop: 16 }}
             />
           )}
         </View>

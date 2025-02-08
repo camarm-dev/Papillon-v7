@@ -19,7 +19,8 @@ export const saveIUTLanAttendance = async (
   periodName: string
 ): Promise<Attendance> => {
   try {
-    const scodocData = account.serviceData.semestres[periodName].absences as scodocData;
+    const data = account.serviceData.semestres as any;
+    const scodocData = data[periodName].absences as scodocData;
     const allAbsences: Array<Absence> = [];
 
     if (scodocData && Object.keys(scodocData).length > 0) {

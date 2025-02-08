@@ -1,7 +1,7 @@
 import * as React from "react";
 import { memo, useCallback, useMemo, useEffect } from "react";
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import CalendarKit from "@howljs/calendar-kit";
+import CalendarKit, { PackedAllDayEvent, PackedEvent, HeaderItemProps as CalendarKitHeaderItemProps, EventItem as CalendarKitEventItem } from "@howljs/calendar-kit";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { useTheme } from "@react-navigation/native";
@@ -14,9 +14,11 @@ import { PapillonHeaderAction } from "@/components/Global/PapillonModernHeader";
 import { getSubjectData } from "@/services/shared/Subject";
 import { PapillonNavigation } from "@/router/refs";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import { TimetableClassStatus } from "@/services/shared/Timetable";
+import { TimetableClassStatus} from "@/services/shared/Timetable";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import type { Screen } from "@/router/helpers/types";
+import {Account} from "@/stores/account/types";
 
 const LOCALES = {
   en: {
@@ -31,7 +33,11 @@ const LOCALES = {
   },
 } as const;
 
-const EventItem = memo(({ event }) => {
+interface EventItemProps {
+  event: PackedEvent | PackedAllDayEvent
+}
+
+const EventItem = memo<EventItemProps>(({ event }) => {
   const theme = useTheme();
 
   const subjectData = useMemo(
@@ -112,7 +118,11 @@ const EventItem = memo(({ event }) => {
   );
 });
 
-const HeaderItem = memo(({ header }) => {
+interface HeaderItemProps {
+  header: CalendarKitHeaderItemProps
+}
+
+const HeaderItem = memo<HeaderItemProps>(({ header }) => {
   const theme = useTheme();
 
   const cols = header.extra.columns;
@@ -202,7 +212,7 @@ const HeaderItem = memo(({ header }) => {
 
 const displayModes = ["Semaine", "3 jours", "Journée"];
 
-const Week = ({ route, navigation }) => {
+const Week: Screen<"Week"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -228,23 +238,23 @@ const Week = ({ route, navigation }) => {
     }
   }), [theme.colors]);
 
-  const [events, setEvents] = React.useState([]);
+  const [events, setEvents] = React.useState<CalendarKitEventItem[]>([]);
 
   useEffect(() => {
     const nevts = Object.values(timetables)
       .flat()
       .map(event => ({
-        id: event.id,
+        id: event.id.toString(),
         title: event.title,
-        start: { dateTime: new Date(event.startTimestamp) },
-        end: { dateTime: new Date(event.endTimestamp) },
+        start: { dateTime: new Date(event.startTimestamp).toString() },
+        end: { dateTime: new Date(event.endTimestamp).toString() },
         event: event,
       }));
 
     setEvents(nevts);
   }, [timetables]);
 
-  const loadTimetableWeek = useCallback(async (weekNumber, force = false) => {
+  const loadTimetableWeek = useCallback(async (weekNumber: number, force = false) => {
     if (!force) {
       if (timetables[weekNumber]) return;
     }
@@ -252,14 +262,14 @@ const Week = ({ route, navigation }) => {
     setIsLoading(true);
     requestAnimationFrame(async () => {
       try {
-        await updateTimetableForWeekInCache(account, weekNumber, force);
+        await updateTimetableForWeekInCache(account as Account, weekNumber, force);
       } finally {
         setIsLoading(false);
       }
     });
   }, [account, timetables]);
 
-  const handleDateChange = useCallback(async (date) => {
+  const handleDateChange = useCallback(async (date: string) => {
     const weekNumber = dateToEpochWeekNumber(new Date(date));
     await loadTimetableWeek(weekNumber);
   }, [loadTimetableWeek]);
@@ -267,7 +277,7 @@ const Week = ({ route, navigation }) => {
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
 
   React.useEffect(() => {
-    if(events.length === 0 && account?.personalization?.icalURLs?.length > 0) {
+    if(events.length === 0 && (account?.personalization?.icalURLs?.length || 0) > 0) {
       setIsLoading(true);
       requestAnimationFrame(async () => {
         const weekNumber = dateToEpochWeekNumber(new Date());
@@ -287,7 +297,7 @@ const Week = ({ route, navigation }) => {
         />
       )}
 
-      {account.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
+      {account?.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
         <View
           style={{
             zIndex: 100000,
@@ -366,7 +376,7 @@ const Week = ({ route, navigation }) => {
           direction="left"
           delay={0}
           selected={displayMode}
-          onSelectionChange={(mode) => {
+          onSelectionChange={(mode: string) => {
             setIsLoading(true);
             requestAnimationFrame(() => {
 
