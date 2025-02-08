@@ -108,11 +108,10 @@ const LastAttendanceEventWidget = forwardRef(({
 
 
   useEffect(() => {
-    const maxEventAge = account?.personalization.widgets?.maxEventAge || 5;
-    const eventAge = Math.round(Math.abs((Number(new Date()) - Number(lastEvent?.date)) / 24 * 60 * 60 * 1000));
+    const maxEventAge = account?.personalization.widgets?.maxEventAge || 10;
+    const eventAge = Math.round((new Date().getTime() - (lastEvent?.date.getTime() || 0)) / (24 * 60 * 60 * 1000));
     const shouldHide = !lastEvent || !account?.personalization.widgets?.lastAttendanceEvent || eventAge >= maxEventAge;
-    // setHidden(shouldHide);
-    setHidden(false);
+    setHidden(shouldHide);
   }, [lastEvent, setHidden]);
 
   if (!lastEvent) {
