@@ -82,7 +82,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
     <View style={{ width: "100%", height: "100%" }}>
       <WidgetHeader icon={<ClockAlert />} title="Changement EDT" />
       {changedCourse ? (
-        <NextCourseLesson nextCourse={changedCourse} />
+        <LessonItem nextCourse={changedCourse} />
       ) : (
         <View style={{ width: "100%", height: "88%", justifyContent: "center", alignItems: "center", gap: 8 }}>
           {loading && <ActivityIndicator />}
@@ -95,7 +95,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
   );
 });
 
-const NextCourseLesson: React.FC<{
+const LessonItem: React.FC<{
   nextCourse: TimetableClass
 }> = ({ nextCourse }) => {
   const [subjectData, setSubjectData] = useState({ color: "#888888", pretty: "Matière inconnue" });
