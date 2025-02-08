@@ -8,6 +8,7 @@ import LastNewsWidget from "@/widgets/Components/LastNews";
 import LastAttendanceEventWidget from "@/widgets/Components/LastAttendanceEvent";
 import {WidgetProps} from "@/components/Home/Widget";
 import TimetableChanges from "@/widgets/Components/TimetableChanges";
+import NextHomeworksWidget from "@/widgets/Components/NextHomeworks";
 
 interface Widget {
   component: ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
@@ -46,5 +47,9 @@ export const Widgets: Widget[] = [
   {
     component: TimetableChanges,
     isLarge: false
+  },
+  {
+    component: NextHomeworksWidget,
+    isLarge: true
   }
 ];
