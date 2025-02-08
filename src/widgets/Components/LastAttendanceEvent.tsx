@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import {UserX, Timer, Eye, Scale, LucideIcon} from "lucide-react-native";
+import {UserX, Timer, Eye, Scale, LucideIcon, Clock8} from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { Text, View } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
@@ -86,8 +86,8 @@ const LastAttendanceEventWidget = forwardRef(({
           justified: true
         };
       })
-    ].sort((a, b) => a.date > b.date ? -1 : 0);
-    return events.length > 0 ? events[events.length - 2] : null;
+    ].sort((a, b) => a.date > b.date ? 0 : -1);
+    return events.length > 0 ? events[events.length - 1] : null;
   }, [attendance]);
 
   useEffect(() => {
@@ -108,9 +108,9 @@ const LastAttendanceEventWidget = forwardRef(({
 
 
   useEffect(() => {
-    const maxEventAge = account?.personalization.widgets?.maxEventAge || 10;
+    const maxEventAge = account?.personalization.widgets?.maxEventAge || 5;
     const eventAge = Math.round((new Date().getTime() - (lastEvent?.date.getTime() || 0)) / (24 * 60 * 60 * 1000));
-    const shouldHide = !lastEvent || !account?.personalization.widgets?.lastAttendanceEvent || eventAge >= maxEventAge;
+    const shouldHide = !lastEvent || !account?.personalization.widgets?.lastAttendanceEvent || eventAge > maxEventAge;
     setHidden(shouldHide);
   }, [lastEvent, setHidden]);
 
@@ -141,36 +141,60 @@ const LastAttendanceEventWidget = forwardRef(({
           {lastEvent.name}
         </Text>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "flex-end",
-          justifyContent: "flex-start",
-          marginTop: 15,
-          gap: 4,
-        }}>
+      <View style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "flex-end",
+            justifyContent: "flex-start",
+            marginTop: 15,
+            gap: 4,
+          }}>
 
-        <AnimatedNumber
-          value={Number(lastEvent.number || "0").toFixed(1)}
+          <AnimatedNumber
+            value={Number(lastEvent.number || "0").toFixed(1)}
+            style={{
+              fontSize: 30,
+              lineHeight: 30,
+              fontFamily: "semibold",
+              color: lastEvent.justified ? colors.text : "#D10000",
+            }}
+            contentContainerStyle={{
+              paddingLeft: 4,
+            }}
+          />
+          <Text
+            style={{
+              color: lastEvent.justified ? colors.text + "50" : "#D1000050",
+              fontFamily: "semibold",
+              fontSize: 20,
+            }}
+          >
+            {lastEvent.unit}
+          </Text>
+        </View>
+        {!lastEvent.justified && <View
           style={{
-            fontSize: 24.5,
-            lineHeight: 24,
-            fontFamily: "semibold",
-            color: colors.text,
-          }}
-          contentContainerStyle={{
-            paddingLeft: 6,
-          }}
-        />
-        <Text
-          style={{
-            color: colors.text + "50",
-            fontFamily: "semibold",
-            fontSize: 15,
-          }}
-        >
-          {lastEvent.unit}
-        </Text>
+            backgroundColor: "#D10000",
+            marginTop: 12,
+            marginRight: 2,
+            paddingVertical: 2,
+            paddingHorizontal: 5,
+            borderRadius: 4
+          }}>
+          <NativeText
+            numberOfLines={1}
+            variant="body"
+            color="#fff"
+          >
+            Non justifié
+          </NativeText>
+        </View>}
       </View>
 
       <Reanimated.View
@@ -184,7 +208,6 @@ const LastAttendanceEventWidget = forwardRef(({
         }}
         layout={LinearTransition}
       >
-
         <NativeText
           variant="title"
           style={{
@@ -197,29 +220,22 @@ const LastAttendanceEventWidget = forwardRef(({
       </Reanimated.View>
       <View
         style={{
-          display: "flex",
-          width: "100%",
           marginTop: 5,
+          display: "flex",
+          width: "50%",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "flex-start",
+          gap: 5
         }}
       >
+        <Clock8 opacity={0.7} size={17} color={colors.text}/>
         <NativeText
           numberOfLines={1}
           variant="subtitle"
         >
           {formatDate(lastEvent.date.toString())}
         </NativeText>
-        {!lastEvent.justified && <NativeText
-          numberOfLines={1}
-          variant="subtitle"
-          style={{
-            color: "#D10000"
-          }}
-        >
-          Non justifié
-        </NativeText>}
       </View>
     </>
   );
