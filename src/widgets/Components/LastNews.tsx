@@ -1,10 +1,10 @@
 import { useTheme } from "@react-navigation/native";
-import { Newspaper } from "lucide-react-native";
+import { Newspaper, Clock8, Paperclip } from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { Text, View } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 
-import { NativeText } from "@/components/Global/NativeComponents";
+import {NativeIcon, NativeText} from "@/components/Global/NativeComponents";
 import { WidgetProps } from "@/components/Home/Widget";
 import { useCurrentAccount } from "@/stores/account";
 import {useNewsStore} from "@/stores/news";
@@ -49,8 +49,7 @@ const LastNewsWidget = forwardRef(({
 
   useEffect(() => {
     const shouldHide = !lastNews || !account?.personalization.widgets?.lastNews;
-    // setHidden(shouldHide);
-    setHidden(false);
+    setHidden(shouldHide);
   }, [lastNews, setHidden]);
 
   if (!lastNews) {
@@ -77,33 +76,48 @@ const LastNewsWidget = forwardRef(({
             fontSize: 16,
           }}
         >
-          Dernière actualité
+          Actualité
         </Text>
       </View>
 
-      <Reanimated.View
+      <View
         style={{
-          alignItems: "center",
-          flexDirection: "column",
-          justifyContent: "space-between",
+          display: "flex",
           width: "100%",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
           marginTop: "auto",
-          gap: 2,
-        }}
-        layout={LinearTransition}
-      >
-
-        <NativeText
-          variant="title"
+          gap: 0
+        }}>
+        <View
           style={{
+            display: "flex",
             width: "100%",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: 0
           }}
-          numberOfLines={1}
         >
-          {lastNews.title}
-        </NativeText>
+          <NativeText
+            variant="title"
+            style={{
+              width: lastNews.read ? "100%" : "90%",
+            }}
+            numberOfLines={1}
+          >
+            {lastNews.title}
+          </NativeText>
+          {!lastNews.read && <View style={{
+            width: 8,
+            height: 8,
+            borderRadius: 5,
+            backgroundColor: theme.colors.primary,
+          }}/>}
+        </View>
         <NativeText
-          variant="body"
+          variant="subtitle"
           style={{
             width: "100%",
           }}
@@ -111,16 +125,29 @@ const LastNewsWidget = forwardRef(({
         >
           {lastNews.content}
         </NativeText>
+      </View>
+
+      <View
+        style={{
+          marginTop: "auto",
+          display: "flex",
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+
         <View
           style={{
-            marginTop: "auto",
             display: "flex",
-            width: "100%",
+            width: "50%",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "flex-start",
+            gap: 5
           }}
         >
+          <Clock8 opacity={0.7} size={17} color={colors.text}/>
           <NativeText
             numberOfLines={1}
             variant="subtitle"
@@ -128,7 +155,24 @@ const LastNewsWidget = forwardRef(({
             {formatDate(lastNews.date.toString())}
           </NativeText>
         </View>
-      </Reanimated.View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: 5
+          }}
+        >
+          <NativeText
+            numberOfLines={1}
+            variant="subtitle"
+          >
+            {lastNews.attachments.length}
+          </NativeText>
+          <Paperclip opacity={0.7} size={17} color={colors.text}/>
+        </View>
+      </View>
     </>
   );
 });
