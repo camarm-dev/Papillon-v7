@@ -2,7 +2,6 @@ import { useTheme } from "@react-navigation/native";
 import {UserX, Timer, Eye, Scale, LucideIcon, Clock8} from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { Text, View } from "react-native";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { NativeText } from "@/components/Global/NativeComponents";
 import { WidgetProps } from "@/components/Home/Widget";
@@ -143,16 +142,17 @@ const LastAttendanceEventWidget = forwardRef(({
       </View>
       <View style={{
         display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center"
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        marginTop: "auto",
       }}>
         {lastEvent.number && <View
           style={{
             flexDirection: "row",
             alignItems: "flex-end",
             justifyContent: "flex-start",
-            marginTop: 15,
+            // marginTop: 15,
             gap: 4,
           }}>
 
@@ -195,19 +195,6 @@ const LastAttendanceEventWidget = forwardRef(({
             {lastEvent.number ? "Non justifié" : "À justifier"}
           </NativeText>
         </View>}
-      </View>
-
-      <Reanimated.View
-        style={{
-          alignItems: "center",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          width: "100%",
-          marginTop: "auto",
-          gap: 2,
-        }}
-        layout={LinearTransition}
-      >
         <NativeText
           variant="title"
           style={{
@@ -217,10 +204,11 @@ const LastAttendanceEventWidget = forwardRef(({
         >
           {lastEvent.description}
         </NativeText>
-      </Reanimated.View>
+      </View>
+
       <View
         style={{
-          marginTop: 5,
+          marginTop: "auto",
           display: "flex",
           width: "50%",
           flexDirection: "row",
