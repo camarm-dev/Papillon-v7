@@ -10,6 +10,7 @@ import { useCurrentAccount } from "@/stores/account";
 import {useNewsStore} from "@/stores/news";
 import {updateNewsInCache} from "@/services/news";
 import formatDate from "@/utils/format/format_date_complets";
+import {log} from "@/utils/logger/logger";
 
 const LastNewsWidget = forwardRef(({
   setLoading,
@@ -48,7 +49,9 @@ const LastNewsWidget = forwardRef(({
 
 
   useEffect(() => {
-    const shouldHide = !lastNews || !account?.personalization.widgets?.lastNews;
+    const maxEventAge = account?.personalization.widgets?.maxEventAge || 5;
+    const eventAge = Math.round((new Date().getTime() - (lastNews?.date?.getTime() || 0)) / (24 * 60 * 60 * 1000));
+    const shouldHide = !lastNews || !account?.personalization.widgets?.lastNews || eventAge >= maxEventAge;
     setHidden(shouldHide);
   }, [lastNews, setHidden]);
 
