@@ -158,7 +158,7 @@ const LastNewsWidget = forwardRef(({
             {formatDate(lastNews.date.toString())}
           </NativeText>
         </View>
-        <View
+        {lastNews.attachments.length > 0 && <View
           style={{
             display: "flex",
             flexDirection: "row",
@@ -174,7 +174,7 @@ const LastNewsWidget = forwardRef(({
             {lastNews.attachments.length}
           </NativeText>
           <Paperclip opacity={0.7} size={17} color={colors.text}/>
-        </View>
+        </View>}
       </View>
     </>
   );
