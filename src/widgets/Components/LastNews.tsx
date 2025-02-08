@@ -48,7 +48,7 @@ const LastNewsWidget = forwardRef(({
   useEffect(() => {
     const maxEventAge = account?.personalization.widgets?.maxEventAge || 5;
     let lastNewsDate = 0;
-    if (lastNews) {
+    if (lastNews?.date.getTime) {
       lastNewsDate = lastNews.date.getTime();
     }
     const eventAge = Math.round((new Date().getTime() - lastNewsDate) / (24 * 60 * 60 * 1000));
