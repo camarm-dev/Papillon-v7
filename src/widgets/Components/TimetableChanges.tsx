@@ -20,6 +20,10 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
   const timetables = useTimetableStore(store => store.timetables);
   const [changedCourse, setChangedCourse] = useState<TimetableClass | null>(null);
 
+  if (!account.personalization.widgets?.timetableChangements) {
+    return null;
+  }
+
   const currentWeekNumber = useMemo(() => dateToEpochWeekNumber(new Date()), []);
 
   useImperativeHandle(ref, () => ({
