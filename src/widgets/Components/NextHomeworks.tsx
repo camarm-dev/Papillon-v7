@@ -185,7 +185,7 @@ const NextHomeworksWidget = forwardRef(({
             numberOfLines={1}
             variant="subtitle"
           >
-            +{undoneHomeworks}
+            +{undoneHomeworks - 1}
           </NativeText>
         </View>}
       </View>
