@@ -34,7 +34,6 @@ import {
   SwatchBook,
   WandSparkles,
   X,
-  Grid2x2Check,
   Blocks,
   HelpCircle
 } from "lucide-react-native";
@@ -59,6 +58,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import * as WebBrowser from "expo-web-browser";
 import { WebBrowserPresentationStyle } from "expo-web-browser";
+import DynamicWidgetsIcon from "@/components/Settings/DynamicWidgetsIcon";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -134,7 +134,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           onPress: () => navigation.navigate("SettingsReactions"),
         },
         {
-          icon: <NativeIconGradient icon={<Grid2x2Check />} colors={["#ba00f1", "#8900f5"]}/>,
+          icon: <NativeIconGradient icon={<DynamicWidgetsIcon />} colors={["#ba00f1", "#8900f5"]}/>,
           color: "#a500f5",
           label: "Dynamic Widgets",
           onPress: () => navigation.navigate("SettingsWidgets"),
