@@ -46,7 +46,7 @@ const NextExamWidget = forwardRef(({
   const [nextExam, totalExams] = useMemo(() => {
     if (!homeworks || !homeworks[currentWeekNumber]) return [null, 0];
     const now = new Date();
-    const examList = [...homeworks[currentWeekNumber], ...homeworks[currentWeekNumber + 1]]
+    const examList = [...homeworks[currentWeekNumber], ...(homeworks[currentWeekNumber + 1] || [])]
       .filter(homework => isExam(homework) && homework.due > now.getTime());
     return [examList.length > 0 ? examList[examList.length - 1] : null, examList.length];
   }, [homeworks, currentWeekNumber]);
