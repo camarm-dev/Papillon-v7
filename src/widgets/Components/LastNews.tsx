@@ -21,7 +21,12 @@ const LastNewsWidget = forwardRef(({
   const news = useNewsStore((store) => store.informations);
 
   useImperativeHandle(ref, () => ({
-    handlePress: () => "News"
+    handlePress: () => {
+      if (account?.personalization.widgets?.deleteAfterRead) {
+        setTimeout(() => setHidden(true), 3000);
+      }
+      return "News";
+    }
   }));
 
   const lastNews = useMemo(() => {

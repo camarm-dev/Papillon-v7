@@ -26,7 +26,12 @@ const NextHomeworksWidget = forwardRef(({
   const currentWeekNumber = useMemo(() => dateToEpochWeekNumber(new Date()), []);
 
   useImperativeHandle(ref, () => ({
-    handlePress: () => "Homeworks"
+    handlePress: () => {
+      if (account?.personalization.widgets?.deleteAfterRead) {
+        setTimeout(() => setHidden(true), 1000);
+      }
+      return "Homeworks";
+    }
   }));
 
   const [nextHomework, undoneHomeworks] = useMemo(() => {

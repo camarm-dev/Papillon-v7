@@ -35,7 +35,12 @@ const LastAttendanceEventWidget = forwardRef(({
   const defaultPeriod = useGradesStore((store) => store.defaultPeriod);
 
   useImperativeHandle(ref, () => ({
-    handlePress: () => "Attendance"
+    handlePress: () => {
+      if (account?.personalization.widgets?.deleteAfterRead) {
+        setTimeout(() => setHidden(true), 3000);
+      }
+      return "Attendance";
+    }
   }));
 
   const lastEvent = useMemo(() => {
