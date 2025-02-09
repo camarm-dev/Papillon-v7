@@ -113,10 +113,6 @@ const LastAttendanceEventWidget = forwardRef(({
     setHidden(shouldHide);
   }, [lastEvent, setHidden]);
 
-  if (!lastEvent) {
-    return null;
-  }
-
   return (
     <>
       <View
@@ -129,7 +125,7 @@ const LastAttendanceEventWidget = forwardRef(({
           opacity: 0.5,
         }}
       >
-        <lastEvent.icon size={20} color={colors.text} />
+        {lastEvent ? <lastEvent.icon size={20} color={colors.text}/> : <Timer/>}
         <Text
           style={{
             color: colors.text,
@@ -137,7 +133,7 @@ const LastAttendanceEventWidget = forwardRef(({
             fontSize: 16,
           }}
         >
-          {lastEvent.name}
+          {lastEvent?.name}
         </Text>
       </View>
       <View style={{
@@ -147,7 +143,7 @@ const LastAttendanceEventWidget = forwardRef(({
         alignItems: "flex-start",
         marginTop: "auto",
       }}>
-        {lastEvent.number && <View
+        {lastEvent?.number && <View
           style={{
             flexDirection: "row",
             alignItems: "flex-end",
@@ -157,12 +153,12 @@ const LastAttendanceEventWidget = forwardRef(({
           }}>
 
           <AnimatedNumber
-            value={Number(lastEvent.number || "0").toFixed(1)}
+            value={Number(lastEvent?.number || "0").toFixed(1)}
             style={{
               fontSize: 30,
               lineHeight: 30,
               fontFamily: "semibold",
-              color: lastEvent.justified ? colors.text : "#D10000",
+              color: lastEvent?.justified ? colors.text : "#D10000",
             }}
             contentContainerStyle={{
               paddingLeft: 4,
@@ -170,7 +166,7 @@ const LastAttendanceEventWidget = forwardRef(({
           />
           <Text
             style={{
-              color: lastEvent.justified ? colors.text + "50" : "#D1000050",
+              color: lastEvent?.justified ? colors.text + "50" : "#D1000050",
               fontFamily: "semibold",
               fontSize: 20,
             }}
@@ -178,7 +174,7 @@ const LastAttendanceEventWidget = forwardRef(({
             {lastEvent.unit}
           </Text>
         </View>}
-        {!lastEvent.justified && <View
+        {!lastEvent?.justified && <View
           style={{
             backgroundColor: "#D10000",
             marginTop: 12,
@@ -192,7 +188,7 @@ const LastAttendanceEventWidget = forwardRef(({
             variant="body"
             color="#fff"
           >
-            {lastEvent.number ? "Non justifié" : "À justifier"}
+            {lastEvent?.number ? "Non justifié" : "À justifier"}
           </NativeText>
         </View>}
         <NativeText
@@ -202,7 +198,7 @@ const LastAttendanceEventWidget = forwardRef(({
           }}
           numberOfLines={1}
         >
-          {lastEvent.description}
+          {lastEvent?.description}
         </NativeText>
       </View>
 
@@ -222,7 +218,7 @@ const LastAttendanceEventWidget = forwardRef(({
           numberOfLines={1}
           variant="subtitle"
         >
-          {formatDate(lastEvent.date.toString())}
+          {formatDate(lastEvent?.date.toString() || "")}
         </NativeText>
       </View>
     </>

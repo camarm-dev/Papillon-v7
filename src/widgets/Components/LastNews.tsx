@@ -56,10 +56,6 @@ const LastNewsWidget = forwardRef(({
     setHidden(shouldHide);
   }, [lastNews, setHidden]);
 
-  if (!lastNews) {
-    return null;
-  }
-
   return (
     <>
       <View
@@ -107,13 +103,13 @@ const LastNewsWidget = forwardRef(({
           <NativeText
             variant="title"
             style={{
-              width: lastNews.read ? "100%" : "90%",
+              width: lastNews?.read ? "100%" : "90%",
             }}
             numberOfLines={1}
           >
-            {lastNews.title}
+            {lastNews?.title}
           </NativeText>
-          {!lastNews.read && <View style={{
+          {!lastNews?.read && <View style={{
             width: 8,
             height: 8,
             borderRadius: 5,
@@ -127,7 +123,7 @@ const LastNewsWidget = forwardRef(({
           }}
           numberOfLines={2}
         >
-          {lastNews.content}
+          {lastNews?.content}
         </NativeText>
       </View>
 
@@ -156,10 +152,10 @@ const LastNewsWidget = forwardRef(({
             numberOfLines={1}
             variant="subtitle"
           >
-            {formatDate(lastNews.date.toString())}
+            {formatDate(lastNews?.date.toString() || "")}
           </NativeText>
         </View>
-        {lastNews.attachments.length > 0 && <View
+        {(lastNews?.attachments.length || 0) > 0 && <View
           style={{
             display: "flex",
             flexDirection: "row",
@@ -172,7 +168,7 @@ const LastNewsWidget = forwardRef(({
             numberOfLines={1}
             variant="subtitle"
           >
-            {lastNews.attachments.length}
+            {lastNews?.attachments.length}
           </NativeText>
           <Paperclip opacity={0.7} size={17} color={colors.text}/>
         </View>}

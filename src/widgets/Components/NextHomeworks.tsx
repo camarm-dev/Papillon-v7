@@ -23,11 +23,6 @@ const NextHomeworksWidget = forwardRef(({
   const account = useCurrentAccount((store) => store.account);
   const homeworks = useHomeworkStore((store) => store.homeworks);
 
-  if (!account?.personalization.widgets?.nextHomeworks) {
-    setHidden(true);
-    return null;
-  }
-
   const currentWeekNumber = useMemo(() => dateToEpochWeekNumber(new Date()), []);
 
   useImperativeHandle(ref, () => ({
@@ -39,7 +34,7 @@ const NextHomeworksWidget = forwardRef(({
     const weekHomeworks = [...homeworks[currentWeekNumber], ...(homeworks[currentWeekNumber + 1] || [])];
     return [
       weekHomeworks.length > 0 ? weekHomeworks.filter(homework => !homework.done)[1] : undefined,
-      weekHomeworks.map(homework => !homework.done).length
+      weekHomeworks.filter(homework => !homework.done).length
     ];
   }, [homeworks]);
 
@@ -65,18 +60,15 @@ const NextHomeworksWidget = forwardRef(({
     setHidden(shouldHide);
   }, [nextHomework, setHidden]);
 
-  if (!nextHomework) {
-    return null;
-  }
   const [subjectData, setSubjectData] = useState({ color: "#888888", pretty: "Matière inconnue" });
 
   useEffect(() => {
     const fetchSubjectData = async () => {
-      const data = await getSubjectData(nextHomework.subject);
+      const data = await getSubjectData(nextHomework?.subject || "");
       setSubjectData(data);
     };
     fetchSubjectData();
-  }, [nextHomework.subject]);
+  }, [nextHomework?.subject]);
 
   return (
     <>
@@ -130,7 +122,7 @@ const NextHomeworksWidget = forwardRef(({
             }}
             numberOfLines={1}
           >
-            {nextHomework.subject}
+            {nextHomework?.subject}
           </NativeText>
         </View>
         <NativeText
@@ -141,7 +133,7 @@ const NextHomeworksWidget = forwardRef(({
           }}
           numberOfLines={2}
         >
-          {parse_homeworks(nextHomework.content)}
+          {parse_homeworks(nextHomework?.content || "")}
         </NativeText>
       </View>
 
@@ -170,7 +162,7 @@ const NextHomeworksWidget = forwardRef(({
             numberOfLines={1}
             variant="subtitle"
           >
-            {timestampToString(nextHomework.due)}
+            {timestampToString(nextHomework?.due || 0)}
           </NativeText>
         </View>
         {undoneHomeworks > 0 && <View
