@@ -26,12 +26,11 @@ const DynamicWidgetsContainerCard = ({ theme }: { theme: any }) => {
           overflow: "hidden",
         }}>
           <Image
-            source={require("@/../assets/images/settings/magic_header.png")}
+            source={require("@/../assets/images/settings/dynamic_widgets.png")}
             style={{
-              width: "90%",
-              height: 230,
-              resizeMode: "contain",
-              marginTop: 75,
+              width: "100%",
+              height: "100%",
+              resizeMode: "cover",
             }}
           />
         </View>
