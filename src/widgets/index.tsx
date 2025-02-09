@@ -14,47 +14,64 @@ import NextExamWidget from "@/widgets/Components/NextExam";
 interface Widget {
   component: ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
   isLarge: boolean
+  importance: () => number
 }
 
+function isDateInTimeRange (date: Date, startHour: number, endHour: number) {
+  return date.getHours() > startHour && date.getHours() < endHour;
+}
+
+// TODO: add importance function to each widget which calculates in real-time an importance number between 1 and 5, to sort on home page
+// It will be very useful; f.e, show Restaurant widgets first around noon, or homeworks at the end of the day...
 export const Widgets: Widget[] = [
   {
     component: RestaurantQRCodeWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => isDateInTimeRange(new Date(), 11.5, 13) ? 5 : 0
   },
   {
     component: RestaurantBalanceWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => isDateInTimeRange(new Date(), 11.5, 13) ? 4 : 1
   },
   {
     component: NextCourseWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => 4
   },
   {
     component: GeneralAverageWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => 3
   },
   {
     component: LastGradeWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => 3
   },
   {
     component: LastNewsWidget,
-    isLarge: true
+    isLarge: true,
+    importance: () => 3
   },
   {
     component: LastAttendanceEventWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => 3
   },
   {
     component: TimetableChanges,
-    isLarge: false
+    isLarge: false,
+    importance: () => 5
   },
   {
     component: NextHomeworksWidget,
-    isLarge: true
+    isLarge: true,
+    importance: () => isDateInTimeRange(new Date(), 18, 23) ? 4 : 1
   },
   {
     component: NextExamWidget,
-    isLarge: false
+    isLarge: false,
+    importance: () => 3
   }
 ];

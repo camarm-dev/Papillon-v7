@@ -243,7 +243,7 @@ const Header: React.FC<{
               height: 131,
             }}
           >
-            {Widgets.map((widget, index) => (
+            {Widgets.sort((a, b) => a.importance() - b.importance()).map((widget, index) => (
               <Widget
                 key={index}
                 widget={widget.component}
