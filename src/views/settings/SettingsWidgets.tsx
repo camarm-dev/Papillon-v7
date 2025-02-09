@@ -1,9 +1,15 @@
 import React, {useRef, useState} from "react";
-import {Text, ScrollView, View, StyleSheet, Switch, TextInput} from "react-native";
+import {ScrollView, Switch, TextInput, View} from "react-native";
 import { useTheme } from "@react-navigation/native";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import {
+  NativeIconGradient,
+  NativeItem,
+  NativeList,
+  NativeListHeader,
+  NativeText,
+} from "@/components/Global/NativeComponents";
 import {
   CheckCircle,
   EyeOff,
@@ -16,7 +22,6 @@ import {
 } from "lucide-react-native";
 import { useCurrentAccount } from "@/stores/account";
 import {WidgetsSettings} from "@/stores/account/types";
-import {log} from "@/utils/logger/logger";
 import DynamicWidgetsContainerCard from "@/components/Settings/DynamicWidgetsContainerCard";
 
 type Widget = {
@@ -145,27 +150,46 @@ const SettingsWidgets: Screen<"SettingsWidgets"> = ({ navigation }) => {
           <NativeText variant="subtitle">
             Affiche uniquement les évènements des {eventMaxAge} derniers jours.
           </NativeText>
-          <TextInput
+        </NativeItem>
+        <NativeItem
+          onPress={() => eventMaxAgeRef.current?.focus()}
+          chevron={false}
+        >
+          <View
             style={{
-              fontSize: 16,
-              fontFamily: "semibold",
-              color: theme.colors.text,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center"
             }}
-            onKeyPress={(event) => {
-              if (!/[0-9]/.test(event.nativeEvent.key)) {
-                event.preventDefault();
-              }
-            }}
-            placeholder="5"
-            keyboardType="numeric"
-            placeholderTextColor={theme.colors.text + "80"}
-            value={eventMaxAge.toString()}
-            onChangeText={(value) => {
-              setEventMaxAge(Number(value));
-              mutateProperty("personalization", { widgets: {...widgetsConfiguration, maxEventAge: Number(value) } });
-            }}
-            ref={eventMaxAgeRef}
-          />
+          >
+            <NativeText
+              variant="title"
+            >
+              Nb. jours :
+            </NativeText>
+            <TextInput
+              style={{
+                fontSize: 16,
+                fontFamily: "semibold",
+                color: theme.colors.text
+              }}
+              onKeyPress={(event) => {
+                if (!/[0-9]/.test(event.nativeEvent.key)) {
+                  event.preventDefault();
+                }
+              }}
+              placeholder="5"
+              keyboardType="numeric"
+              placeholderTextColor={theme.colors.text + "80"}
+              value={eventMaxAge.toString()}
+              onChangeText={(value) => {
+                setEventMaxAge(Number(value));
+                mutateProperty("personalization", { widgets: {...widgetsConfiguration, maxEventAge: Number(value) } });
+              }}
+              ref={eventMaxAgeRef}
+            />
+          </View>
         </NativeItem>
       </NativeList>
     </ScrollView>
