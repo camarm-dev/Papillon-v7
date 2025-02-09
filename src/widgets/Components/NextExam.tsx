@@ -37,8 +37,6 @@ const NextExamWidget = forwardRef(({
   const homeworks = useHomeworkStore((store) => store.homeworks);
   const currentWeekNumber = useMemo(() => dateToEpochWeekNumber(new Date()), []);
 
-  const comingExams: Exam[] = [];
-
   useImperativeHandle(ref, () => ({
     handlePress: () => "Homeworks"
   }));
