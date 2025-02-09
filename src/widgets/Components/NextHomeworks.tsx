@@ -34,6 +34,7 @@ const NextHomeworksWidget = forwardRef(({
   }));
 
   const [nextHomework, undoneHomeworks] = useMemo(() => {
+    if (!homeworks) return [null, 0];
     const weekHomeworks = [...homeworks[currentWeekNumber], ...homeworks[currentWeekNumber + 1]];
     return [
       weekHomeworks.length > 0 ? weekHomeworks.filter(homework => !homework.done)[1] : undefined,
