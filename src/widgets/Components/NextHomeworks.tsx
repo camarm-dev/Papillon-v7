@@ -24,6 +24,7 @@ const NextHomeworksWidget = forwardRef(({
   const homeworks = useHomeworkStore((store) => store.homeworks);
 
   if (!account?.personalization.widgets?.nextHomeworks) {
+    setHidden(true);
     return null;
   }
 

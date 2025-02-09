@@ -21,6 +21,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
   const [changedCourse, setChangedCourse] = useState<TimetableClass | null>(null);
 
   if (!account.personalization.widgets?.timetableChangements) {
+    setHidden(true);
     return null;
   }
 
